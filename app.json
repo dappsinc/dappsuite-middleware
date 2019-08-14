@@ -12,43 +12,43 @@
   "env": {
     "CLIENT_ID": {
       "description": "The client Id for your Connected App",
-      "generator": "secret"
+      "generator": ""
     },
     "CLIENT_SECRET": {
       "description": "The client secret for your Connnected App.",
-      "value": "5"
+      "value": ""
     },
     "DATABASE_URL": {
       "description": "The Database URL of where your accounts are stored.",
-      "value": "5"
+      "value": ""
     },
     "PROVIDER_URL_MAINNET": {
       "description": "The URL of the Ethereum Mainnet Provider.",
-      "value": "5"
+      "value": ""
     },
     "PROVIDER_URL_TESTNET": {
       "description": "The URL of the Ethereum Ropsten Testnet Provider.",
-      "value": "5"
+      "value": ""
     },
     "SF_PWD": {
       "description": "The Salesforce Password",
-      "value": "5"
+      "value": ""
     },
     "SF_UNAME": {
       "description": "The Salesforce Username",
-      "value": "5"
+      "value": ""
     },
     "SQL_PWD": {
       "description": "The Database Password where your accounts are stored",
-      "value": "5"
+      "value": ""
     },
     "SQL_SERVER": {
       "description": "The Database Server where your accounts are stored",
-      "value": "5"
+      "value": ""
     },
     "SQL_UNAME": {
       "description": "The Database Username",
-      "value": "5"
+      "value": ""
     }
   },
   "addons": [
