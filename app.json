@@ -1,7 +1,7 @@
 {
-  "name": "DappSuite NodeServer",
+  "name": "Dappsuite Middleware",
   "description": "A Node.js app that connects Salesforce to the Ethereum Blockchain",
-  "repository": "https://bitbucket.org/dominicsteil/dappsuite-nodeserver",
+  "repository": "https://github.com/dappsinc/dappsuite-middleware",
   "logo": "http://node-js-sample.herokuapp.com/node.svg",
   "success_url": "/welcome",
   "website": "https://dapps-inc.com",
