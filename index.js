@@ -28,7 +28,7 @@ let OauthCache = {};
 let deploymentTime = new Date();
 
 //TODO: This is a temp fix. Need to move this to a config file
-let ethAccountSyncUrl = "http://54.245.40.255:8080";
+let ethAccountSyncUrl = "";
 
 
 // configure app to use bodyParser()

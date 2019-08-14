@@ -18,8 +18,8 @@ let config = {
 };
 
 //Salesforce connected app
-config.SF_CLIENT_ID = ''
-config.SF_CLIENT_PWD = '';
+config.SF_CLIENT_ID = process.env.CLIENT_ID;
+config.SF_CLIENT_PWD = process.env.CLIENT_SECRET;
 config.SF_CALLBACK_URI = 'https://localhost:3000/oauth/callback';
 config.SF_API_VERSION = 'v40.0';
 
@@ -55,18 +55,18 @@ config.SF_ORG_SANDBOX = {
     };
 
 //Dapps database settings
-config.DB_USERNAME = '';
-config.DB_PASSWORD = '';
-config.DB_SERVER = '';
-config.DB_DATABASE = '';
+config.DB_USERNAME = process.env.SQL_UNAME;
+config.DB_PASSWORD = process.env.SQL_PWD;
+config.DB_SERVER = process.env.SQL_SERVER;
+config.DB_DATABASE = process.env.DATABASE_URL;
 config.DB_ENCRYPT = true;
 
 //Node Server setting
 config.PORT = 8080;
 
 //Eth setting
-config.PROVIDER_URL_MAINNET = '';
-config.PROVIDER_URL_TESTNET = '';
+config.PROVIDER_URL_MAINNET = process.env.PROVIDER_URL_MAINNET;
+config.PROVIDER_URL_TESTNET = process.env.PROVIDER_URL_TESTNET;
 
 
 
