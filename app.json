@@ -3,7 +3,7 @@
   "description": "A Node.js app that connects Salesforce to the Ethereum Blockchain",
   "repository": "https://github.com/dappsinc/dappsuite-middleware",
   "logo": "http://node-js-sample.herokuapp.com/node.svg",
-  "success_url": "/welcome",
+  "success_url": "/",
   "website": "https://dapps-inc.com",
   "keywords": ["node", "express", "static", "ethereum", "blockchain", "salesforce"],
   "scripts": {
