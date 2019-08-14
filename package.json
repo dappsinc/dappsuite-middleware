@@ -1,0 +1,44 @@
+{
+  "name": "dapps-nodeserver-dev",
+  "version": "0.2.8",
+  "description": "dapps-nodeserver-dev",
+  "engines": {
+    "node": "8.11.4",
+    "npm": "5.6.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@salesforce-ux/design-system": "^2.2.2",
+    "body-parser": "~1.17.2",
+    "crypto": "0.0.3",
+    "ejs": "2.5.7",
+    "ethereumjs-tx": "^1.2.5",
+    "ethereumjs-util": "5.1.2",
+    "express": "~4.15.3",
+    "helmet": "^3.8.1",
+    "http": "^0.0.0",
+    "keythereum": "^1.0.2",
+    "log4js": "^0.6.38",
+    "mongoose": "~4.11.5",
+    "nforce": "^1.7.0",
+    "nodemailer": "^4.0.1",
+    "openlaw": "^0.2.16",
+    "randomstring": "^1.1.5",
+    "scryptsy": "2.0.0",
+    "sequelize": "^4.4.2",
+    "sequelize-auto": "^0.4.28",
+    "solc": "^0.4.14",
+    "tedious": "^2.3.1",
+    "uuid": "3.1.0",
+    "web3": "^0.18.2"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "Apache 2.0"
+}

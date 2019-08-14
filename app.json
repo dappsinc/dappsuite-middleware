@@ -1,0 +1,65 @@
+{
+  "name": "DappSuite NodeServer",
+  "description": "A Node.js app that connects Salesforce to the Ethereum Blockchain",
+  "repository": "https://bitbucket.org/dominicsteil/dappsuite-nodeserver",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "success_url": "/welcome",
+  "website": "https://dapps-inc.com",
+  "keywords": ["node", "express", "static", "ethereum", "blockchain", "salesforce"],
+  "scripts": {
+    "postDeploy": ""
+  },
+  "env": {
+    "CLIENT_ID": {
+      "description": "The client Id for your Connected App",
+      "generator": "secret"
+    },
+    "CLIENT_SECRET": {
+      "description": "The client secret for your Connnected App.",
+      "value": "5"
+    },
+    "DATABASE_URL": {
+      "description": "The Database URL of where your accounts are stored.",
+      "value": "5"
+    },
+    "PROVIDER_URL_MAINNET": {
+      "description": "The URL of the Ethereum Mainnet Provider.",
+      "value": "5"
+    },
+    "PROVIDER_URL_TESTNET": {
+      "description": "The URL of the Ethereum Ropsten Testnet Provider.",
+      "value": "5"
+    },
+    "SF_PWD": {
+      "description": "The Salesforce Password",
+      "value": "5"
+    },
+    "SF_UNAME": {
+      "description": "The Salesforce Username",
+      "value": "5"
+    },
+    "SQL_PWD": {
+      "description": "The Database Password where your accounts are stored",
+      "value": "5"
+    },
+    "SQL_SERVER": {
+      "description": "The Database Server where your accounts are stored",
+      "value": "5"
+    },
+    "SQL_UNAME": {
+      "description": "The Database Username",
+      "value": "5"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql",
+      "options": {
+          "version": "9.5"
+      }
+      
+    }
+
+  ],
+  "image": "heroku/nodejs"
+}
