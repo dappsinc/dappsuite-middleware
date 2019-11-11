@@ -22,7 +22,7 @@
     "http": "^0.0.0",
     "keythereum": "^1.0.2",
     "log4js": "^0.6.38",
-    "mongoose": "~4.11.5",
+    "mongoose": "~5.7.8",
     "nforce": "^1.7.0",
     "nodemailer": "^4.0.1",
     "openlaw": "^0.2.16",
