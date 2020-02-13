@@ -7,10 +7,10 @@
 
 ```jsx 
 
-config.SF_UNAME 		= process.env.SF_UNAME; // set salesforce username
-config.SF_PWD 			= process.env.SF_PWD; // ser salesforce password
-config.CLIENT_ID 		= process.env.CLIENT_ID; // set connected app id
-config.CLIENT_SECRET 	= process.env.CLIENT_SECRET; // set connected app secret
+config.SF_UNAME = process.env.SF_UNAME; // set salesforce username
+config.SF_PWD = process.env.SF_PWD; // ser salesforce password
+config.CLIENT_ID = process.env.CLIENT_ID; // set connected app id
+config.CLIENT_SECRET = process.env.CLIENT_SECRET; // set connected app secret
 config.CALLBACK_URI	= 'http://localhost:3000/oauth/_callback';
 config.DB_USERNAME = process.env.SQL_UNAME;
 config.DB_PASSWORD = process.env.SQL_PWD;
