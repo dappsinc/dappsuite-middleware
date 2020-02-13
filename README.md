@@ -28,7 +28,3 @@ config.PROVIDER_URL_MAINNET = process.env.PROVIDER_URL_MAINNET;
 config.PROVIDER_URL_TESTNET = process.env.PROVIDER_URL_TESTNET;
 
 ```
-2. Create a new Named Credential in Salesforce and point in to your local host or SSL certified domain with the dappsuite-middleware running. 
-
-<middlewarelocally>.ngrok.io
-  
