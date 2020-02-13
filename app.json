@@ -15,11 +15,11 @@
       "generator": ""
     },
     "CLIENT_SECRET": {
-      "description": "The client secret for your Connnected App.",
+      "description": "The client secret for your Connected App.",
       "value": ""
     },
     "DATABASE_URL": {
-      "description": "The Database URL of where your accounts are stored.",
+      "description": "The Database URL of where your Etheruem Accounts are stored.",
       "value": ""
     },
     "PROVIDER_URL_MAINNET": {
@@ -31,19 +31,19 @@
       "value": ""
     },
     "SF_PWD": {
-      "description": "The Salesforce Password",
+      "description": "The Salesforce Org Password",
       "value": ""
     },
     "SF_UNAME": {
-      "description": "The Salesforce Username",
+      "description": "The Salesforce Org Username",
       "value": ""
     },
     "SQL_PWD": {
-      "description": "The Database Password where your accounts are stored",
+      "description": "The Database Password where your Ethereum Accounts are stored",
       "value": ""
     },
     "SQL_SERVER": {
-      "description": "The Database Server where your accounts are stored",
+      "description": "The Database Server where your Ethereum Accounts are stored",
       "value": ""
     },
     "SQL_UNAME": {
