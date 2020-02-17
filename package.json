@@ -28,7 +28,7 @@
     "openlaw": "^0.2.16",
     "randomstring": "^1.1.5",
     "scryptsy": "2.0.0",
-    "sequelize": "^4.4.2",
+    "sequelize": "^5.15.1",
     "sequelize-auto": "^0.4.28",
     "solc": "^0.4.14",
     "tedious": "^2.3.1",
