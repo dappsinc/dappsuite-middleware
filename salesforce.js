@@ -1,11 +1,11 @@
 var nforce 			= require('nforce');
 var http			= require('http');
 
-var SF_UNAME 		= process.env.SF_UNAME; // set salesforce username
-var SF_PWD 			= process.env.SF_PWD; // set salesforce password
-var CLIENT_ID 		= process.env.CLIENT_ID; // set connected app id
-var CLIENT_SECRET 	= process.env.CLIENT_SECRET; // set connected app secret
-var CALLBACK_URI	= 'http://localhost:3000/oauth/_callback';
+var SF_UNAME 		= 'diego@dapps.network'; // set salesforce username
+var SF_PWD 			= 'bberwtoi8'; // set salesforce password
+var CLIENT_ID 		= '3MVG9LBJLApeX_PDs4iX_HLCZm9UeP_.AmqigBJl5l1h._mv.k_m9kMr1WJkeCQKyCYrFggug7ikDYj2oQ2v9'; 
+var CLIENT_SECRET 	= '88C3908EC57F607390B9001CA7543B73F1F95C15985F636C8EA14BF6B170B35D'; // set connected app secret
+var CALLBACK_URI	= 'https://dapps.ngrok.io/oauth/_callback';
 
 var oauth;
 var oauthJSONString='';
@@ -15,8 +15,8 @@ var org;
 function login(callback){
 	
 	org = nforce.createConnection({
-	  clientId: CLIENT_ID,
-	  clientSecret: CLIENT_SECRET,
+	  clientId: '3MVG9LBJLApeX_PDs4iX_HLCZm9UeP_.AmqigBJl5l1h._mv.k_m9kMr1WJkeCQKyCYrFggug7ikDYj2oQ2v9',
+	  clientSecret: '88C3908EC57F607390B9001CA7543B73F1F95C15985F636C8EA14BF6B170B35D',
 	  redirectUri: CALLBACK_URI,
 	  autoRefresh: true,
 	  apiVersion: 'v36.0',  		// optional, defaults to current salesforce API version

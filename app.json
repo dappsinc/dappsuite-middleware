@@ -18,6 +18,10 @@
       "description": "The client secret for your Connected App.",
       "value": ""
     },
+    "CALLBACK_URI": {
+      "description": "The callback uri for your Connected App",
+      "value": ""
+    },
     "DATABASE_URL": {
       "description": "The Database URL of where your Etheruem Accounts are stored.",
       "value": ""

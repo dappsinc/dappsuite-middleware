@@ -20,7 +20,7 @@ let config = {
 //Salesforce connected app
 config.SF_CLIENT_ID = process.env.CLIENT_ID;
 config.SF_CLIENT_PWD = process.env.CLIENT_SECRET;
-config.SF_CALLBACK_URI = 'https://localhost:3000/oauth/callback';
+config.SF_CALLBACK_URI = process.env.CALLBACK_URI;
 config.SF_API_VERSION = 'v40.0';
 
 config.ON_REFRESH = function(newOauth, oldOauth, cb){
@@ -59,13 +59,14 @@ config.SF_UNAME = process.env.SF_UNAME; // set salesforce username
 config.SF_PWD = process.env.SF_PWD; // ser salesforce password
 config.CLIENT_ID = process.env.CLIENT_ID; // set connected app id
 config.CLIENT_SECRET= process.env.CLIENT_SECRET; // set connected app secret
-config.CALLBACK_URI	= 'http://localhost:3000/oauth/_callback';
+config.CALLBACK_URI	= process.env.CALLBACK_URI;
 
 //Dapps database settings
-config.DB_USERNAME = process.env.SQL_UNAME;
-config.DB_PASSWORD = process.env.SQL_PWD;
-config.DB_SERVER = process.env.SQL_SERVER;
-config.DB_DATABASE = process.env.DATABASE_URL;
+config.DB_USERNAME = process.env.DB_UNAME;
+config.DB_PASSWORD = process.env.DB_PWD;
+config.DB_SERVER = process.env.DB_SERVER;
+config.DB_DATABASE = process.env.DB_URL;
+config.DB_DIALECT = process.env.DB_DIALECT;
 config.DB_ENCRYPT = true;
 
 //Node Server setting
