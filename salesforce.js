@@ -368,9 +368,35 @@ function createContractRecord(contractObj,callback) {
 }
 
 
+
+function createStandardContract(standardContract,callback) {
+	console.log("create standard contract object", standardContract);
+	var contract = nforce.createSObject('Contract');
+	contract.set('Name', standardContract.Name);
+	contract.set('ContractNumber', standardContract.ContractNumber);
+	contract.set('Status', standardContract.Status);
+
+	org.insert({ sobject: contract, oauth: oauth }, function(err, resp){
+		if(!err) {
+			console.log('Contract Object Created');
+			addressId = resp.id;
+			callback(addressId);
+		}else{
+			callback(err);
+		}
+
+	});
+
+}
+
+
+
+
+
 //export the functions here
 exports.login = login;
 exports.createContractRecord = createContractRecord;
+exports.createStandardContract = createStandardContract;
 exports.updateContract = updateContract;
 exports.setTransaction = setTransaction;
 exports.getRecordsByQuery = getRecordsByQuery;
