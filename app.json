@@ -28,11 +28,11 @@
     },
     "PROVIDER_URL_MAINNET": {
       "description": "The URL of the Ethereum Mainnet Provider.",
-      "value": ""
+      "value": "https://mainnet.infura.io/v3/48580280a990467a88a690ef35dcc26a"
     },
     "PROVIDER_URL_TESTNET": {
       "description": "The URL of the Ethereum Ropsten Testnet Provider.",
-      "value": ""
+      "value": "https://ropsten.infura.io/v3/"
     },
     "SF_PWD": {
       "description": "The Salesforce Org Password",
