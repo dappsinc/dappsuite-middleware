@@ -1,7 +1,7 @@
 ## DappSuite Baseline Integration
 
 
-Using Etehreum Mainnet and Zero Knowledger Proofs for Secure and Private Contract Enforcement
+Using Ethereum Mainnet and Zero Knowledge Proofs for Secure and Private Contract Enforcement
 
 
 Dappsuite Connected App provides Baseline CRUD access to Salesforce environment.
