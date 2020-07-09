@@ -1594,7 +1594,7 @@ router.post('/verifyOrganization', function(req, res) {
 	var reqStrEncrypted = datajson.reqStr;
 	const orgId = datajson.orgId;
 
-	const privateKey = 'dappsai8901234567890123456789012';
+	const privateKey = '';
 	let parsedRequest = encryptService.parseServerRequest(reqStrEncrypted,privateKey);
 	
 	devconsole.debug('***parsedRequest***',parsedRequest);
@@ -1627,7 +1627,7 @@ router.post('/verifyOrganization2', function(req, res) {
     devconsole.debug('***jsonBody***',jsonBody);
     let reqStrEncrypted = jsonBody.reqStr;
     let orgId = jsonBody.orgId;
-    const MASTER_KEY = 'dappsai8901234567890123456789012';
+    const MASTER_KEY = '';
     var reqPromise = encryptService.parseServerRequestWithMasterKey(reqStrEncrypted,orgId);
 	reqPromise.then(
 		function(parsedRequest){
@@ -1830,6 +1830,106 @@ router.post('/getBalance2', function(req, res) {
         }
     );
 });
+
+
+// Baseline APIS
+
+
+//Get Shield Contract Merkle Leaf
+
+router.post('/getLeaf', function(req, res) {
+
+	var datajson = req.body;
+	var address = datajson.address;
+	var index = datajson.index;
+
+
+	baselineApi.getLeaf(address, index, function (merkleTreeObject) {
+	  // do stuff
+	});
+	
+	res.send();
+
+})
+
+
+// Insert Shield Contract Merkle Leaf
+
+router.post('/insertLeaf', function(req, res) {
+
+	var datajson = req.body;
+	var sender = datajson.sender;
+	var address = datajson.address;
+	var value = datajson.value;
+
+	baselineApi.insertLeaf(sender, address, value, function (merkleTreeObject) {
+	  // do stuff
+	});
+
+	res.send();
+})
+
+// Create Workgroup 
+
+router.post('/createWorkgroup', function(req, res) {
+	
+	var _data = req.body;
+	var name = _data.name;
+	const resp = (await this.baseline?.createWorkgroup({
+		config: {
+		  baselined: true,
+		},
+		name: name,
+		network_id: this.baselineConfig?.networkId,
+	  })).responseBody;
+  
+	  this.workgroup = resp.application;
+	  this.workgroupToken = resp.token.token;
+
+});
+
+
+
+//Compile Baseline Circuit API
+
+router.post('/compileBaselineCircuit', function(req, res) {
+	console.log("####### req", req.body);
+    baselineApi.compile(req.body,
+    		function(error,result){
+    			//result will have solc object which can be used to compile
+
+		    	if(result){
+		    		res.send(result.compile(req.body.sourcecode));
+		    	}else if(error){
+		    		res.send(String(error));
+		    	}else{
+		    		res.send("Something went worng, please refresh and try again!");
+		    	}
+		     });
+});
+
+
+
+// Register Organization
+
+router.post('/registerOrganization', function(req, res) {
+
+	var _data = req.body;
+	var name = _data.name;
+	var messagingEndpoint = _data.messagingEndpoint;
+
+    var org = (await this.baseline?.createOrganization({
+      name: name,
+      metadata: {
+        messaging_endpoint: messagingEndpoint,
+      },
+	})).responseBody;
+	
+    res.data(org);
+  })
+
+
+
 
 
 
