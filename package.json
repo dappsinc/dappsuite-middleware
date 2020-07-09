@@ -11,6 +11,9 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "@baseline-protocol/api": "0.0.4",
+    "@baseline-protocol/messaging": "0.0.2",
+    "@baseline-protocol/privacy": "0.0.3",
     "@salesforce-ux/design-system": "^2.2.2",
     "body-parser": "~1.17.2",
     "crypto": "0.0.3",
