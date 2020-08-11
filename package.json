@@ -14,6 +14,7 @@
     "@baseline-protocol/api": "0.0.4",
     "@baseline-protocol/messaging": "0.0.2",
     "@baseline-protocol/privacy": "0.0.3",
+    "@baseline-protocol/types": "0.0.1",
     "@salesforce-ux/design-system": "^2.2.2",
     "body-parser": "~1.17.2",
     "crypto": "0.0.3",
@@ -29,6 +30,7 @@
     "nforce": "^1.7.0",
     "nodemailer": "^4.0.1",
     "openlaw": "^0.2.16",
+    "provide-js": "^1.3.2",
     "randomstring": "^1.1.5",
     "scryptsy": "2.0.0",
     "sequelize": "^5.15.1",
@@ -36,7 +38,7 @@
     "solc": "^0.4.14",
     "tedious": "^2.3.1",
     "uuid": "3.1.0",
-    "web3": "^0.18.2",
+    "web3": "^1.2.0",
     "zokrates-js": "^1.0.23"
   },
   "keywords": [

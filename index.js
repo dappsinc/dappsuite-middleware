@@ -11,6 +11,9 @@ var request = require('request');
 
 var web3ApiClass = require('./web3.api.js');
 var web3Api = new web3ApiClass();
+var baselineApiClass = require('./baseline.api.js')
+var baselineApi = new baselineApiClass();
+
 var salesforce = require('./salesforce');
 //var filter = require('./filter');
 var service = require('./service');
@@ -1831,8 +1834,50 @@ router.post('/getBalance2', function(req, res) {
     );
 });
 
+// Zokrates APIS
+
+
+router.post('/compile3', function(req, res) {
+
+	let devconsole = logger.getLogger('***index.js***compile3***');
+
+    var jsonBody = req.body;
+    devconsole.debug('***jsonBody***',jsonBody);
+    let reqStrEncrypted = jsonBody.reqStr;
+	let orgId = jsonBody.orgId;
+	
+    var reqPromise = encryptService.parseServerRequest2(reqStrEncrypted,orgId);
+	reqPromise.then(
+		function(parsedRequest){
+			devconsole.debug('***parsedRequest***',parsedRequest);
+			let dataStr = parsedRequest.dataStr;
+			let _data = JSON.parse(dataStr);
+			devconsole.debug('***_data***',_data);
+
+			let sourcecode = _data.sourcecode;
+			
+			zokratesProvider.compute(_data,
+					function(error,result){
+						//result will have zok object which can be used to compile
+
+						if(result){
+							res.send(result.compile(sourcecode));
+						}else if(error){
+							res.send(String(error));
+						}else{
+							res.send("Something went wrong, please refresh and try again!");
+						}
+					});
+			
+		}
+	).catch(function(error){
+		devconsole.debug('***error***',error);
+	});
+	
+});
 
 // Baseline APIS
+
 
 
 //Get Shield Contract Merkle Leaf
@@ -1875,12 +1920,12 @@ router.post('/createWorkgroup', function(req, res) {
 	
 	var _data = req.body;
 	var name = _data.name;
-	const resp = (await this.baseline?.createWorkgroup({
+	const resp = (await baseline?.createWorkgroup({
 		config: {
 		  baselined: true,
 		},
 		name: name,
-		network_id: this.baselineConfig?.networkId,
+		network_id: baselineConfig?.networkId,
 	  })).responseBody;
   
 	  this.workgroup = resp.application;
@@ -1918,7 +1963,7 @@ router.post('/registerOrganization', function(req, res) {
 	var name = _data.name;
 	var messagingEndpoint = _data.messagingEndpoint;
 
-    var org = (await this.baseline?.createOrganization({
+    var org = (await baselineApi.createOrganization({
       name: name,
       metadata: {
         messaging_endpoint: messagingEndpoint,
@@ -1927,13 +1972,6 @@ router.post('/registerOrganization', function(req, res) {
 	
     res.data(org);
   })
-
-
-
-
-
-
-
 
 
 router.post('/postTest', function(req, res) {
