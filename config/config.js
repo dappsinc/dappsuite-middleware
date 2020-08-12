@@ -72,10 +72,18 @@ config.DB_ENCRYPT = true;
 //Node Server setting
 config.PORT = 8080;
 
-//Eth setting
+//Eth Settings
 config.PROVIDER_URL_MAINNET = process.env.PROVIDER_URL_MAINNET;
 config.PROVIDER_URL_TESTNET = process.env.PROVIDER_URL_TESTNET;
 
 
+// Baseline Settings
+config.BASELINE_SYSTEM = 'Salesforce';
+config.BASELINE_MESSAGE_PROTOCOL = 'NATS';
+
+// Provide settings
+config.PROVIDE_JWT = process.env.PROVIDE_JWT;
+config.PROVIDE_EMAIL = process.env.PROVIDE_EMAIL;
+config.PROVIDE_PASSWORD = process.env.PROVIDE_PASSWORD;
 
 module.exports = config;

@@ -356,32 +356,34 @@ function createStandardContract(standardContract,callback) {
 }
 
 // Baseline Salesforce Record for RFQ Use Case
+// GetReferencedBaselineId
 
-function baselineContractRecord(baselinedRecord, callback) {
+function updateBaselineContractRecord(baselinedRecord, result, callback) {
 
 	console.log("create baselined contract object", baselinedRecord);
 	var q = `SELECT rfqCaseId from Contract WHERE rfqCaseId = ${baselinedRecord.rfqCaseId} LIMIT 1`;
 	
 	org.query({ query: q }, function(err, resp){
- 
+	if(err) return console.error(err);
+
 	if(!err && resp.records) {
 	   
 	var contract = resp.records[0];
-	contract.set('rfqCaseId', baselineRecord.rfqCaseId);
-	contract.set('purchQty', baselinedRecord.purchQty);
-	contract.set('purchUnit', baselinedRecord.purchUnit);
-	contract.set('purchPrice', baselineRecord.purchPrice);
-	contract.set('lineNum', baselineReocrd.lineNum);
+	contract.rfqCaseId = baselineRecord.rfqCaseId;
+	contract.purchQty = baselinedRecord.purchQty;
+	contract.purchUnit = baselinedRecord.purchUnit;
+	contract.purchPrice = baselineRecord.purchPrice;
+	contract.lineNum = baselineReocrd.lineNum;
 	
     org.update({ sobject: contract, oauth: oauth }, function(err, resp){
-		
 		if(!err) console.log('Baselined record updated in Salesforce!');
-		else {
-			return err;
+			});
 		}
 	});
+}
 
-	} else {
+
+function createBaselineContractRecord(baselinedRecord, callback) {
 
 	console.log("Create a new Baselined record in Salesforce!")
 	var baselinedRecord = nforce.createSObject('Contract')
@@ -392,20 +394,15 @@ function baselineContractRecord(baselinedRecord, callback) {
 	baselinedRecord.set('lineNum', baselineRecord.lineNum);
 
 	org.insert({ sobject: baselineRecord, oauth: oauth }, function(err, resp){
-		if(!err) {
-			console.log('Baselined Contract Object Created');
-		}else{
-			callback(err);
-		}
-			});
-		}
-	}
-}
+		if(!err) console.log('Baselined Contract Object Created');
+	});
+};
 
 
 //export the functions here
 exports.login = login;
-exports.baselinedRecord = baselinedRecord;
+exports.createBaselinedContractRecord = createBaselinedContractRecord;
+exports.updateBaselinedContractRecord = updateBaselinedContractRecord;
 exports.createContractRecord = createContractRecord;
 exports.createStandardContract = createStandardContract;
 exports.updateContract = updateContract;
