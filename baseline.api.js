@@ -48,7 +48,7 @@ constructor(baselineConfig, natsConfig) {
       importResolver: zokratesImportResolver,
     });
 
-    
+
 
 self.commonCallback = function(error,result){
     console.info('error:',error);
@@ -118,6 +118,7 @@ self.deployBaselineCircuit() {
 
     return setupArtifacts;
 
+    }
 }
 
 
@@ -183,16 +184,13 @@ self.resolveWorkgroupContract() {
 // Generate Proof
 
 
-self.generateProof(msg) {
-
-    baseline.generateProof().then(function (msg) {
+self.generateProof = function(msg) {
 
     const raw = JSON.stringify(msg);
     const privateInput = keccak256(raw);
-    zk.computeWitness();
-    zk.generateProof();
+    const witness = zk.computeWitness(this.baselineCircuitArtifacts, [privateInput]);
+    const proof = zk.generateProof(this.baselineCircuitArtifacts.program, witness, this.baselineCircuitSetupArtifacts.keypair.pk);
     return proof;
-    })
 }
 
 // Send Nats Message
