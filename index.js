@@ -1919,7 +1919,7 @@ router.post('/createWorkgroup', function(req, res) {
 	
 	var _data = req.body;
 	var name = _data.name;
-	const resp = (await baseline?.createWorkgroup({
+	const resp = (await baselineApi.createWorkgroup({
 		config: {
 		  baselined: true,
 		},
@@ -1933,12 +1933,29 @@ router.post('/createWorkgroup', function(req, res) {
 });
 
 
+//deploy api
+
+router.post('/deployCircuit', function(req, res) {
+	console.log("####### req", req.body);
+    baselineApi.deployBaselineCircuit(req.body,
+    		function(error,result){
+
+		    	if(result){
+		    		res.send(result.setupArtifacts(req.body.sourcecode));
+		    	}else if(error){
+		    		res.send(String(error));
+		    	}else{
+		    		res.send("Something went wrong, please refresh and try again!");
+		    	}
+		     });
+});
+
 
 //Compile Baseline Circuit API
 
 router.post('/compileBaselineCircuit', function(req, res) {
 	console.log("####### req", req.body);
-    baselineApi.compile(req.body,
+    baselineApi.compileBaselineCircuit(req.body,
     		function(error,result){
     			//result will have solc object which can be used to compile
 
@@ -1951,6 +1968,47 @@ router.post('/compileBaselineCircuit', function(req, res) {
 		    	}
 		     });
 });
+
+
+//Sends Nats Message
+
+router.post('/sendProtocolMessage', function(req, res) {
+	console.log("####### req", req.body);
+    baselineApi.sendProtocolMessage(req.body,
+    		function(error,result){
+		    	if(result){
+		    		res.send(result);
+		    	}else if(error){
+		    		res.send(String(error));
+		    	}else{
+		    		res.send("Something went wrong. The NATS message didn't go through.");
+		    	}
+		     });
+});
+
+
+// Generate Proof
+
+router.post('/generateProof', function(req, res) {
+	
+    var _msg = req.body;
+
+    try{
+	baselineApi.generateProof({
+		msg: _msg,
+		args : _args,
+		callbackFn : function(error,result){
+			console.log(error,result);
+			if(result)
+				res.send(result);
+		}
+	});
+
+	}catch(e){
+		console.log('exception:',e);
+	}
+});
+
 
 
 

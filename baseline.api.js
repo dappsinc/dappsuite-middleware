@@ -84,7 +84,7 @@ self.deployBaselineCircuit() {
 
     const shieldAddress = await  this.deployWorkgroupShieldContract();
     const trackedShield = await baseline.track(shieldAddress);
-    if (trackedSheild) {
+    if (trackedShield) {
         this.contracts['shield'] = {
             address: shieldAddress,
         }
@@ -99,10 +99,6 @@ self.deployBaselineCircuit() {
 
 }
 
-
-
-
-//********* WORKGROUP APIS *************/
 
 // Create Workgroup 
 
