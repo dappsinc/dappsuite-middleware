@@ -485,10 +485,6 @@ router.post('/createContractSign', function(req, res) {
 		console.log('exception:',e);
 	}
 
-
-
-
-
 });
 
 router.post('/createContractSign2', function(req, res) {
@@ -1795,7 +1791,7 @@ let getBalanceCommon = function(accounts){
     return accountBalanceMap;
 }
 
-
+// Get Balance
 
 router.post('/getBalance', function(req, res) {
     let devconsole = logger.getLogger('***index.js***getBalance***');
@@ -1808,6 +1804,9 @@ router.post('/getBalance', function(req, res) {
     res.send(accountBalanceMap);
     
 });
+
+
+// Get Balance 
 
 router.post('/getBalance2', function(req, res) {
     let devconsole = logger.getLogger('***index.js***getBalance2***');
