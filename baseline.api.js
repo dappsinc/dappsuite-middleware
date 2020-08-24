@@ -22,12 +22,33 @@ var PROVIDER_URL = ''; // Set Provider URL
 
 var baseline = baselineServiceFactory;
 var nats = messageServiceFactory;
+var baselineConfig;
+var natsConfig;
+var protocolMessagesRx = 0;
+var protocolMessagesTx = 0;
+var workgroup;
+var workgroupToken;
+var workflowIdentifier;
 var zk = zkSnarkCircuitProviderServiceFactory;
 self.baseline = baseline;
 self.nats = nats;
 self.zk = zk;
 
+constructor(baselineConfig, natsConfig) {
+    this.baselineConfig = baselineConfig;
+    this.natsConfig = natsConfig;
 
+    this.init();
+  }
+
+ async function init() {
+    this.baseline = await baselineServiceFactory(baselineProviderProvide, this.baselineConfig);
+    this.nats = await messagingServiceFactory(messagingProviderNats, this.natsConfig);
+    this.zk = await zkSnarkCircuitProviderServiceFactory(zkSnarkCircuitProviderServiceZokrates, {
+      importResolver: zokratesImportResolver,
+    });
+
+    
 
 self.commonCallback = function(error,result){
     console.info('error:',error);
