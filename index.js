@@ -1914,6 +1914,48 @@ router.post('/createWorkgroup', function(req, res) {
 });
 
 
+// Create Workgroup 
+
+router.post('/deployWorkgroupContact', function(req, res) {
+	
+	var _data = req.body;
+	var name = _data.name;
+	var type = _data.type;
+	var contractParams = _data.contractParams
+	const resp = (await baselineApi.createWorkgroup({
+		name: name,
+		type: type,
+		contractParams: contractParmas
+	  })).responseBody;
+
+});
+
+
+// Accept Workgroup Invite 
+
+router.post('/acceptWorkgroupInvite', function(req, res) {
+	
+	var _data = req.body;
+	var inviteToken = _data.inviteToken;
+	var contracts = _data.contracts;
+	const resp = (await baselineApi.acceptWorkgroupInvite({
+		_inviteToken = inviteToken,
+		contracts = contracts
+	  })).responseBody;
+
+});
+
+
+router.post('/inviteWorkgroupParticipant', function(req, res) {
+	
+	var _data = req.body;
+	var email = _data.email;
+	const resp = (await baselineApi.inviteWorkgroupParticipant({
+		email = email
+	  })).responseBody;
+
+});
+
 //deploy api
 
 router.post('/deployCircuit', function(req, res) {
@@ -1972,12 +2014,11 @@ router.post('/sendProtocolMessage', function(req, res) {
 
 router.post('/generateProof', function(req, res) {
 	
-    var _msg = req.body;
-
+	var _data = req.body;
+	var _msg = _data.msg;
     try{
 	baselineApi.generateProof({
 		msg: _msg,
-		args : _args,
 		callbackFn : function(error,result){
 			console.log(error,result);
 			if(result)
@@ -1989,8 +2030,6 @@ router.post('/generateProof', function(req, res) {
 		console.log('exception:',e);
 	}
 });
-
-
 
 
 // Register Organization
