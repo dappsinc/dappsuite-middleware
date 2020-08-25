@@ -79,18 +79,19 @@ self.checkCallbackFn = function(callbackFn){
 
 // Compile Baseline Circuit
 
-self.compileBaselineCircuit = function(req,callbackFn){
+self.compileBaselineCircuit = function(){
     const path = readFileSync(baselineDocumentCircuitPath).toString();
-    zk.compile(path, 'main')
+    this.baselineCircuitArtifacts = await zk.compile(path, 'main')
     return baselineCircuitArtifacts;
 }
 
+// Compile
+
 self.compile = function(req,callbackFn){
-    //console.log("IIIIIIIIIIIIIIIIIInn web3 req", req);
+    
     try{
         if(req.version){
             console.log("in version", req.version);
-            // getting the development snapshot
             solc.loadRemoteVersion(req.version, callbackFn);
         }else{
             console.log("######## in local version");            
@@ -102,6 +103,23 @@ self.compile = function(req,callbackFn){
         return e;
     }  
 }
+
+// Sign Message
+
+self.signMessage = async function(vaultId, keyId, message) {
+    const orgToken = (await this.createOrgToken()).token;
+    const vault = Vault.clientFactory(orgToken, this.baselineConfig?.vaultApiScheme, this.baselineConfig?.vaultApiHost);
+    return (await vault.signMessage(vaultId, keyId, message));
+  }
+
+// Fetch Keys
+
+ self.fetchKeys = async function() {
+    const orgToken = (await this.createOrgToken()).token;
+    const vault = Vault.clientFactory(orgToken, this.baselineConfig?.vaultApiScheme, this.baselineConfig?.vaultApiHost);
+    const vaults = (await vault.fetchVaults({}));
+    return (await vault.fetchVaultKeys(vaults[0].id, {}));
+  }
 
 // Deploy Baseline Circuit
 
@@ -131,6 +149,8 @@ self.deployBaselineCircuit = function(){
 
     }
 }
+
+// Accept Workgroup Invite
 
 self.acceptWorkgroupInvite = function(_inviteToken, contracts){
     if (this.workgroup || this.workgroupToken || this.org || this.baselineConfig.initiator) {
@@ -185,6 +205,8 @@ self.setWorkgroup = function(workgroup, workgroupToken) {
 };
 
 
+// Invite Workgroup Participant
+
 self.inviteWorkgroupParticipant = function(email){
     //token
     //identApiScheme
@@ -209,7 +231,7 @@ self.inviteWorkgroupParticipant = function(email){
 
 // Deploy Workgroup Contract
 
-self.deployWorkgroupSheildContract= function() {
+self.deployWorkgroupSheildContract = function() {
 
     const txHash = await baseline.rpcExec;
 
@@ -333,7 +355,7 @@ async function protocolMessageFactory(
 
     return buffer;
 
-    
+
 
 if(module!=undefined && module.exports!=undefined){
     module.exports = baselineApiModule;
