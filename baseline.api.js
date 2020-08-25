@@ -1,3 +1,10 @@
+var baselineApiModule = function(){
+    var self = this;
+
+var PROVIDER_URL = ''; // Set Provider URL
+
+var ETH_TX_PATH = './node_modules/ethereumjs-tx/index.js';
+
   
 import { IBaselineRPC, IBlockchainService, IRegistry, IVault, baselineServiceFactory, baselineProviderProvide } from '@baseline-protocol/api';
 import { IMessagingService, messagingProviderNats, messagingServiceFactory } from '@baseline-protocol/messaging';
@@ -9,14 +16,17 @@ import { readFileSync } from 'fs';
 import { compile as solidityCompile } from 'solc';
 import * as jwt from 'jsonwebtoken';
 import { keccak256 } from 'js-sha3';
+var Web3 = require('web3');
+var solc = require('solc');
+var Transaction = require(ETH_TX_PATH);
 
-var baselineApiModule = function(){ 
-    var self = this;
-
+if (typeof web3 !== 'undefined') {
+    web3 = new Web3(web3.currentProvider);
+} else {
+    web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URL));
 }
 
-var PROVIDER_URL = ''; // Set Provider URL
-
+console.log("#####web3", web3.currentProvider)
 
 // Baseline APIs
 
@@ -47,6 +57,7 @@ constructor(baselineConfig, natsConfig) {
     this.zk = await zkSnarkCircuitProviderServiceFactory(zkSnarkCircuitProviderServiceZokrates, {
       importResolver: zokratesImportResolver,
     });
+}
 
 
 
@@ -94,7 +105,7 @@ self.compile = function(req,callbackFn){
 
 // Deploy Baseline Circuit
 
-self.deployBaselineCircuit() {
+self.deployBaselineCircuit = function(){
 
     await this.compileBaselineCircuit();
 
@@ -119,6 +130,22 @@ self.deployBaselineCircuit() {
     return setupArtifacts;
 
     }
+}
+
+self.acceptWorkgroupInvite = function(_inviteToken, contracts){
+    if (this.workgroup || this.workgroupToken || this.org || this.baselineConfig.initiator) {
+        return Promise.reject('failed to accept workgroup invite');
+      }
+
+      const invite = jwt.decode(inviteToken);
+
+      // deploy erc1820-registry
+      // deploy organization-registry
+      // deploy shield contract
+      // deploy verifier contract
+
+      // track
+      //register organization
 }
 
 
@@ -149,7 +176,7 @@ self.deployWorkgroupContract = function(name, type, contractParams) {
 
 // Set Workgroup
 
-self.setWorkgroup(workgroup, workgroupToken) {
+self.setWorkgroup = function(workgroup, workgroupToken) {
  
      baseline.setWorkgroup().then(function () {
 
@@ -158,9 +185,31 @@ self.setWorkgroup(workgroup, workgroupToken) {
 };
 
 
+self.inviteWorkgroupParticipant = function(email){
+    //token
+    //identApiScheme
+    //identApiHost
+    try {
+        createInvitation({
+            application_id: this.workgroup.id,
+            email: email,
+            permissions: 0,
+            params: {
+                erc1820_registry_contract_address: this.contracts['erc1820-registry'].address,
+                invitor_organization_address: await this.resolveOrganizationAddress(),
+                organization_registry_contract_address: this.contracts['organization-registry'].address,
+                shield_contract_address: this.contracts['shield'].address,
+                verifier_contract_address: this.contracts['verifier'].address,
+                workflow_identifier: this.workflowIdentifier,
+            },
+        });
+    }
+}
+
+
 // Deploy Workgroup Contract
 
-self.deployWorkgroupSheildContract() {
+self.deployWorkgroupSheildContract= function() {
 
     const txHash = await baseline.rpcExec;
 
@@ -173,13 +222,25 @@ self.deployWorkgroupSheildContract() {
 
 // Resolve Workgroup Contract
 
-self.resolveWorkgroupContract() {
+self.resolveWorkgroupContract = function() {
 
     baseline.resolveWorkgroupContract().then(function () {
 
     })
 
 }
+
+
+self.registerOrganization = function(name, messageEndpoint){
+    baseline.createOrganization({
+        name: name,
+        metadata: {
+            messaging_endpoint: messageEndpoint,
+        },
+    });
+
+}
+
 
 // Generate Proof
 
@@ -217,6 +278,62 @@ self.sendProtocolMessage = function(recipient, msg){
     
 }
 
+
+// Start Protocol Subscriptions
+
+self.startProtocolSubscriptions = function() {
+    if (!this.nats?.isConnected()) {
+        await this.nats?.connect();
+      }
+}
+
+const subscription = await this.nats?.subscribe(baselineProtocolMessageSubject, (msg, err) => {
+    console.log(`received ${msg.length}-byte protocol message: \n\t${msg}`);
+    this.protocolMessagesRx++;
+    this.ingestProtocolMessage(msg);
+  });
+
+  this.protocolSubscriptions.push(subscription);
+  return this.protocolSubscriptions;
+
+async function protocolMessageFactory(
+    recipient,
+    shield,
+    identifier,
+    payload,
+  ) {
+    const vaults = await this.fetchVaults();
+    const key = await this.createVaultKey(vaults[0].id, 'secp256k1');
+    const signature = (await this.signMessage(vaults[0].id, key.id, payload.toString('utf8'))).signature;
+
+    return {
+      opcode: Opcode.Baseline,
+      recipient: recipient,
+      shield: shield,
+      identifier: identifier,
+      signature: signature,
+      type: PayloadType.Text,
+      payload: payload,
+    };
+  }
+
+    const reservedBits = Buffer.alloc(messageReservedBitsLength / 8);
+    const buffer = Buffer.alloc(5 + 42 + 42 + 36 + 64 + 1 + reservedBits.length + msg.payload.length);
+
+    buffer.write(msg.opcode);
+    buffer.write(msg.recipient, 5);
+    buffer.write(msg.shield, 5 + 42);
+    buffer.write(msg.identifier, 5 + 42 + 42);
+    buffer.write(reservedBits.toString(), 5 + 42 + 42 + 36);
+    buffer.write(msg.signature, 5 + 42 + 42 + 36 + reservedBits.length);
+    buffer.write(msg.type.toString(), 5 + 42 + 42 + 36 + reservedBits.length + 64);
+
+    const encoding = msg.type === PayloadType.Binary ? 'binary' : 'utf8';
+    buffer.write(msg.payload.toString(encoding), 5 + 42 + 42 + 36 + reservedBits.length + 64 + 1);
+
+    return buffer;
+
+    
 
 if(module!=undefined && module.exports!=undefined){
     module.exports = baselineApiModule;

@@ -80,28 +80,6 @@ app.use(helmet.frameguard({ action: 'deny' }));//sameorigin
 app.use(helmet());
 app.disable('x-powered-by');
 
-//Intercepter
-// app.use(function(req, res, next) {
- 
-//   let devconsole = logger.getLogger('***Index.js***Intercepter***');
-//     devconsole.debug('Inside Intercepter');
-// 	let datajson = req.body;
-// 	devconsole.debug('***datajson***',datajson);
-// 	let reqStrEncrypted = datajson.reqStr;
-// 	const orgId = datajson.orgId;
-
-// 	var reqPromise = encryptService.parseServerRequest2(reqStrEncrypted,orgId);
-// 	reqPromise.then(
-// 		function(parsedRequest){
-// 			devconsole.debug('***parsedRequest***',parsedRequest);
-// 		}
-// 	).error(function(error){
-// 		devconsole.debug('***error***',error);
-// 	});
-
-//   next();
-// });
-
 
 var allowCrossDomain = function(req,res,next){
 	res.header('Access-Control-Allow-Origin','*');
@@ -115,7 +93,7 @@ app.use(allowCrossDomain);
 
 var port = process.env.PORT || 8080;        // set our port
 
-// ROUTES FOR OUR API
+// ROUTES FOR DAPPSUITE API
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
@@ -217,13 +195,16 @@ let prepareResponse = function(type,responseJson,params){
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/test', function(req, res) {
-    res.json({ message: 'Node Server is running normally, deployed on :(IST) 20/10/2017 22:48 PM --(GMT)'+deploymentTime});
+    res.json({ message: 'Dappsuite Node Server is running normally, deployed on: '+deploymentTime});
 });
 
+// Get Account [0]
 router.get('/testweb3', function(req, res) {
     res.json({ message:  'Account :' + web3Api.web3.eth.accounts[0]});
 });
 
+
+// Create Contract
 router.post('/createContract', function(req, res) {
 	//console.log('Log: In CreateContract method of server',res);
     var _data = req.body;
