@@ -44,12 +44,6 @@ self.baseline = baseline;
 self.nats = nats;
 self.zk = zk;
 
-constructor(baselineConfig, natsConfig) {
-    this.baselineConfig = baselineConfig;
-    this.natsConfig = natsConfig;
-
-    this.init();
-  }
 
  async function init() {
     this.baseline = await baselineServiceFactory(baselineProviderProvide, this.baselineConfig);
@@ -208,10 +202,7 @@ self.setWorkgroup = function(workgroup, workgroupToken) {
 // Invite Workgroup Participant
 
 self.inviteWorkgroupParticipant = function(email){
-    //token
-    //identApiScheme
-    //identApiHost
-    try {
+ 
         createInvitation({
             application_id: this.workgroup.id,
             email: email,
@@ -226,7 +217,6 @@ self.inviteWorkgroupParticipant = function(email){
             },
         });
     }
-}
 
 
 // Deploy Workgroup Contract
