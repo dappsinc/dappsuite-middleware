@@ -76,15 +76,6 @@ self.checkCallbackFn = function(callbackFn){
 }
 
 
-
-// Compile Baseline Circuit
-
-self.compileBaselineCircuit = function(){
-    const path = readFileSync(baselineDocumentCircuitPath).toString();
-    this.baselineCircuitArtifacts = await zk.compile(path, 'main')
-    return baselineCircuitArtifacts;
-}
-
 // Compile
 
 self.compile = function(req,callbackFn){
@@ -120,6 +111,15 @@ self.signMessage = async function(vaultId, keyId, message) {
     const vaults = (await vault.fetchVaults({}));
     return (await vault.fetchVaultKeys(vaults[0].id, {}));
   }
+
+// Compile Baseline Circuit
+
+self.compileBaselineCircuit = function(){
+    const path = readFileSync(baselineDocumentCircuitPath).toString();
+    this.baselineCircuitArtifacts = await zk.compile(path, 'main')
+    return baselineCircuitArtifacts;
+}
+
 
 // Deploy Baseline Circuit
 
