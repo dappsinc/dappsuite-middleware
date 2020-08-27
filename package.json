@@ -11,10 +11,10 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "@baseline-protocol/api": "0.0.4",
-    "@baseline-protocol/messaging": "0.0.2",
-    "@baseline-protocol/privacy": "0.0.6",
-    "@baseline-protocol/types": "0.0.1",
+    "@baseline-protocol/api": "0.1.0",
+    "@baseline-protocol/messaging": "0.1.0",
+    "@baseline-protocol/privacy": "0.1.0",
+    "@baseline-protocol/types": "0.1.0",
     "@salesforce-ux/design-system": "^2.2.2",
     "body-parser": "~1.17.2",
     "crypto": "0.0.3",
@@ -32,7 +32,7 @@
     "nforce": "^1.7.0",
     "nodemailer": "^4.0.1",
     "openlaw": "^0.2.16",
-    "provide-js": "^1.3.2",
+    "provide-js": "^1.3.3",
     "randomstring": "^1.1.5",
     "scryptsy": "2.0.0",
     "sequelize": "^5.15.1",
