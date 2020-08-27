@@ -1947,6 +1947,8 @@ router.post('/acceptWorkgroupInvite', function(req, res) {
 });
 
 
+// Invite Workgroup Participant
+
 router.post('/inviteWorkgroupParticipant', function(req, res) {
 	
 	var _data = req.body;

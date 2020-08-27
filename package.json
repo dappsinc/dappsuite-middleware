@@ -24,6 +24,7 @@
     "express": "~4.15.3",
     "helmet": "^3.8.1",
     "http": "^0.0.0",
+    "js-sha256": "^0.9.0",
     "js-sha3": "^0.8.0",
     "jsonwebtoken": "^8.5.1",
     "keythereum": "^1.0.2",
