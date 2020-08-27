@@ -1874,7 +1874,7 @@ route.post('/dispatchProtocolMessage', function(req, res) {
 
 	if (msg.opcode === Opcode.Baseline) {
 
-	this.sendProtocolMessage(msg.sender, Opcode.Baseline, {
+	baselineApi.sendProtocolMessage(msg.sender, Opcode.Baseline, {
 		doc: JSON.parse(msg.payload.toString()),
 		__hash: hash,
 		signature: sig,
