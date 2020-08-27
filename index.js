@@ -1857,7 +1857,67 @@ router.post('/compile3', function(req, res) {
 	
 });
 
-// Baseline APIS
+// Baseline Protocol APIS
+
+// Dispatch Protocol Message using NATS
+
+route.post('/dispatchProtocolMessage', function(req, res) {
+
+	var datajson = req.body;
+	var msg = datajson.msg;
+	var payload = msg.payload;
+	var opcode = msg.opcode;
+	var sender = msg.sender;
+	var recipient = msg.recipient;
+	const hash = sha256(payload.toString())
+	const sig = signMessage(vault[0].id, '', hash).signature
+
+	if (msg.opcode === Opcode.Baseline) {
+
+	this.sendProtocolMessage(msg.sender, Opcode.Baseline, {
+		doc: JSON.parse(msg.payload.toString()),
+		__hash: hash,
+		signature: sig,
+	  });
+	} else if (payload.doc && payload.__hash) {
+		if (payload.root && payload.sibling_path) {
+			const verified = baselineApi.verify(this.contracts[sheild].address, payload.lead, payload.root, payload.sibling_path);
+			if (!verified) {
+				await baselineApi.sendProtocolMessage(sender, opcode, { err: 'verification failed' });
+				return Promist.reject('failed to verify')
+			}
+		}
+		this.workflowRecords[payload.doc.id] = payload.doc;
+		console.log('record is baselined...', payload.doc);
+	  } else {
+		
+	// baseline this record
+	const proof = await baselineApi.generateProof(msg);
+
+	const signerResp = (await keythereumApi.createEthereumAccount({
+		network_id: '3', // ropsten network api
+	}))
+
+	const resp = web3api.call({
+			method: 'verify',
+			params: [[proof], [this.baselineCircuitSetupArtifacts?.keypair.vk]],
+			value: 0,
+			account_id: signerResp['id'],
+	});
+
+	console.log(resp);
+	if (!resp) {
+	  return Promise.reject(`failed to verify proof: ${proof}`);
+	}
+
+	const leaf = baselineApi.insertLeaf(sender, this.contracts['shield'].address, hash);
+	if (leaf) {
+		console.log(`inserted leaf... ${leaf}`);
+	} else {
+		return Promise.reject('failed to insert leaf');
+	}
+}
+
 
 
 
