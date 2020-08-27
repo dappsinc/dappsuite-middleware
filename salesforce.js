@@ -1,11 +1,11 @@
 var nforce 			= require('nforce');
 var http			= require('http');
 
-var SF_UNAME 		= process.env.SF_UNAME; // set salesforce username
-var SF_PWD 			= process.env.SF_PWD; // set salesforce password
-var CLIENT_ID 		= process.env.CLIENT_ID; 
-var CLIENT_SECRET 	= process.env.CLIENT_SECRET; // set connected app secret
-var CALLBACK_URI	= process.env.CALLBACK_URI;
+var SF_UNAME 		= process.env.SF_UNAME; // set salesforce username in env vars
+var SF_PWD 			= process.env.SF_PWD; // set salesforce password in env vars
+var CLIENT_ID 		= process.env.CLIENT_ID;  // set connected app client in env vars
+var CLIENT_SECRET 	= process.env.CLIENT_SECRET; // set connected app secret in env vars
+var CALLBACK_URI	= process.env.CALLBACK_URI; // set callback uri in env vars
 
 var oauth;
 var oauthJSONString='';
@@ -355,10 +355,10 @@ function createStandardContract(standardContract,callback) {
 
 }
 
-// Baseline Salesforce Record for RFQ Use Case
+// Baseline Salesforce Record for RFQ Use Case from Radish-34
 // GetReferencedBaselineId
 
-function updateBaselineContractRecord(baselinedRecord, result, callback) {
+function updateBaselinedContractRecord(baselinedRecord, result, callback) {
 
 	console.log("create baselined contract object", baselinedRecord);
 	var q = `SELECT rfqCaseId from Contract WHERE rfqCaseId = ${baselinedRecord.rfqCaseId} LIMIT 1`;
@@ -383,7 +383,7 @@ function updateBaselineContractRecord(baselinedRecord, result, callback) {
 }
 
 
-function createBaselineContractRecord(baselinedRecord, callback) {
+function createBaselinedContractRecord(baselinedRecord, callback) {
 
 	console.log("Create a new Baselined record in Salesforce!")
 	var baselinedRecord = nforce.createSObject('Contract')

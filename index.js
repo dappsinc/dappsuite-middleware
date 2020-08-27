@@ -11,8 +11,8 @@ var request = require('request');
 
 var web3ApiClass = require('./web3.api.js');
 var web3Api = new web3ApiClass();
-var baselineApiClass = require('./baseline.api.js')
-var baselineApi = new baselineApiClass();
+//var baselineApiClass = require('./baseline.api.js');
+//var baselineApi = new baselineApiClass();
 
 var salesforce = require('./salesforce');
 //var filter = require('./filter');
@@ -24,6 +24,7 @@ let daoServiceModule = require('./services/daoservice.js');
 let daoService = new daoServiceModule();
 let logger = require('./utils/utilsLogger.js');
 let keythereumApi = require('./keythereum/keythereum-api.js');
+let baselineApi = require('./baseline.api.js')
 let helmet = require('helmet');
 let http = require('http');
 
@@ -1900,13 +1901,13 @@ router.post('/createWorkgroup', function(req, res) {
 	
 	var _data = req.body;
 	var name = _data.name;
-	const resp = (await baselineApi.createWorkgroup({
+	const resp = baselineApi.createWorkgroup({
 		config: {
 		  baselined: true,
 		},
 		name: name,
-		network_id: baselineConfig?.networkId,
-	  })).responseBody;
+		network_id: '',
+	  }).responseBody;
   
 	  this.workgroup = resp.application;
 	  this.workgroupToken = resp.token.token;
@@ -1922,11 +1923,11 @@ router.post('/deployWorkgroupContact', function(req, res) {
 	var name = _data.name;
 	var type = _data.type;
 	var contractParams = _data.contractParams
-	const resp = (await baselineApi.createWorkgroup({
+	const resp = baselineApi.createWorkgroup({
 		name: name,
 		type: type,
 		contractParams: contractParmas
-	  })).responseBody;
+	  }).responseBody;
 
 });
 
@@ -1938,10 +1939,10 @@ router.post('/acceptWorkgroupInvite', function(req, res) {
 	var _data = req.body;
 	var inviteToken = _data.inviteToken;
 	var contracts = _data.contracts;
-	const resp = (await baselineApi.acceptWorkgroupInvite({
-		_inviteToken = inviteToken,
-		contracts = contracts
-	  })).responseBody;
+	const resp = baselineApi.acceptWorkgroupInvite({
+		inviteToken: inviteToken,
+		contracts: contracts
+	  }).responseBody;
 
 });
 
@@ -1950,9 +1951,9 @@ router.post('/inviteWorkgroupParticipant', function(req, res) {
 	
 	var _data = req.body;
 	var email = _data.email;
-	const resp = (await baselineApi.inviteWorkgroupParticipant({
-		email = email
-	  })).responseBody;
+	const resp = baselineApi.inviteWorkgroupParticipant({
+		email: email
+	  }).responseBody;
 
 });
 
@@ -2040,12 +2041,12 @@ router.post('/registerOrganization', function(req, res) {
 	var name = _data.name;
 	var messagingEndpoint = _data.messagingEndpoint;
 
-    var org = (await baselineApi.createOrganization({
+    var org = baselineApi.createOrganization({
       name: name,
       metadata: {
         messaging_endpoint: messagingEndpoint,
       },
-	})).responseBody;
+	}).responseBody;
 	
     res.data(org);
   })
