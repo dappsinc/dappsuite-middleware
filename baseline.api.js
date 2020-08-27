@@ -332,27 +332,69 @@ self.generateProof = function(msg) {
 
 // Send Nats Message
 
-self.sendProtocolMessage = function(recipient, msg){
+self.sendProtocolMessage = function(recipient, opcode, msg) {
+
+    const messagingEndpoint = await this.resolveMessagingEndpoint(recipient);
+    
+    if (!messagingEndpoint) {
+        return Promise.reject(`protocol message not sent; organization messaging endpoint not resolved for recipient: ${recipient}`);
+    }
+
+    const bearerToken = this.natsBearerTokens[messagingEndpoint];
+    if (!bearerToken) {
+      return Promise.reject(`protocol message not sent; no bearer authorization cached for endpoint of recipient: ${recipient}`);
+    }
+
     const recipientNatsConn = await messagingServiceFactory(messagingProviderNats, {
-        bearerToken: this.bearerToken,
+        bearerToken: bearerToken,
         natsServers: messageEndpoint
     });
+
     await recipientNatsConn.connect();
 
-    const wiremsg = this.serializeProtocolMessage(
+    const wiremsg = this.marshalProtocolMessage(
         await this.protocolMessageFactory(
+            opcode,
             recipient,
             this.contracts['shield'].address,
-            this.workflowId,
+            this.workflowIdentifier,
             Buffer.from(JSON.stringify(msg)),
         ),
     );
 
     const result = recipientNatsConn.publish(baselineProtocolMessageSubject, wiremsg);
     this.protocolMessagesTx++;
+    recipientNatsConn.disconnect();
     return result;
     
 }
+
+// Resolve Messaging Endpoint
+
+self.resolveMessagingEndpoint = function(addr) {
+    const org = await this.fetchOrganization(addr);
+    if (!org) {
+      return Promise.reject(`organization not resolved: ${addr}`);
+    }
+
+    const messagingEndpoint = org['config'].messaging_endpoint;
+    if (!messagingEndpoint) {
+      return Promise.reject(`organization messaging endpoint not resolved for recipient: ${addr}`);
+    }
+
+    return messagingEndpoint;
+  }
+
+// Resolve NATS Bearer Token
+
+self.resolveNatsBearerToken = function(addr) {
+    const endpoint = await this.resolveMessagingEndpoint(addr);
+    if (!endpoint) {
+      return Promise.reject(`failed to resolve messaging endpoint for participant: ${addr}`);
+    }
+    return this.natsBearerTokens[endpoint];
+  }
+
 
 
 // Start Protocol Subscriptions
