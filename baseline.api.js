@@ -69,6 +69,70 @@ self.checkCallbackFn = function(callbackFn){
         return self.commonCallback;
 }
 
+// Baseline RPCs
+
+// Get Leaf from Shield Contract
+
+self.getLeaf = function(address, index, callbackFn){
+    IBaselineRPC.getLeaf({  address: address, 
+                            index: index
+                        },
+    function(error,result){
+        console.info('error:',error);
+        console.info('result:',result);
+        if(callbackFn)
+            callbackFn(error,result);
+        }
+    );
+}
+
+// Get Leaves from Shield Contract
+
+self.getLeaves = function(address, indexes, callbackFn){
+    IBaselineRPC.getLeaves({  address: address,
+                              indexes: indexes
+                            },
+    function(error,result){
+        console.info('error:',error);
+        console.info('result:',result);
+        if(callbackFn)
+            callbackFn(error,result);
+        }
+    );
+}
+
+
+// Insert Leaf from Shield Contract
+
+self.insertLeaf = function(sender, address, value, callbackFn){
+    IBaselineRPC.insertLeaf({   sender: sender,
+                                address: address, 
+                                value: value
+                            },
+        function(error,result){
+        console.info('error:',error);
+        console.info('result:',result);
+        if(callbackFn)
+            callbackFn(error,result);
+        }
+    )
+}
+
+// Insert Leaves from Shield Contract
+
+self.insertLeaves = function(sender, address, value, callbackFn){
+    IBaselineRPC.insertLeaves({   sender: sender,
+                                  address: address,
+                                  value: value
+                              },
+        function(error,result){
+        console.info('error:',error);
+        console.info('result:',result);
+        if(callbackFn)
+            callbackFn(error,result);
+        }
+    )
+}
 
 // Compile
 
