@@ -1030,126 +1030,6 @@ router.post('/sendTransactionSign2', function(req, res) {
 
 
 
-// router.post('/sendTransactionSign2', function(req, res) {
-
-// 	let devconsole = logger.getLogger('***Index.js***createAccountTest2***'); //Change1
-// 	var datajson = req.body;
-// 	var reqStrEncrypted = datajson.reqStr;
-// 	const orgId = datajson.orgId;
-
-// 	var reqPromise = encryptService.parseServerRequest2(reqStrEncrypted,orgId);
-// 	reqPromise.then(
-// 		function(_data,orgObj){
-// 			devconsole.debug('***_data***',_data);
-
-// 			    var abi  = _data.abi;
-// 			    var byteData = _data.byteData;
-// 			    var fromAddress = _data.from;
-// 			    var privateKey = _data.privateKey;
-// 			    var _address = _data.address;
-// 			    var constructorParam = _data.methodArgs;
-// 			    var _args = getArguments(constructorParam);
-// 			    var _methodName = _data.methodName;
-// 			    var libraryId = _data.libraryId;
-// 			    var libraryName = _data.libraryName;
-// 			    var ethereumPassword = _data.ethereumPassword;
-// 			    var trasactionPassword = _data.transactionPassword;
-// 			    var signUsingOption = _data.signUsingOption;
-
-// 			    //To Be Added in Salesforce Request
-// 			    var userId = _data.userId;
-
-// 			    var environment = orgObj.environment;
-
-// 			    var params = {
-// 			    	signUsingOption : signUsingOption,
-// 			    	isRegistered : true,
-// 			    	accountId :fromAddress,
-// 			    	ethereumPassword : ethereumPassword,
-// 			    	privateKey : privateKey
-// 			    };
-
-// 			    var newPrivateKey = utilService.getPrivateKey(params);
-// 			    devconsole.debug('***newPrivateKey***', newPrivateKey);
-
-// 			    //token details
-// 				var token;
-// 				if(_data.hasOwnProperty('token')){
-// 				    token =  _data.token;
-// 				    //console.log("######token", token);
-// 				}
-
-// 			    try{
-// 				var inputParams  = {
-// 					abi : abi,
-// 					args : _args,
-// 					from : fromAddress,
-// 					data:byteData,
-// 					address : _address,
-// 					methodName : _methodName,
-// 					privateKey : newPrivateKey
-// 				}
-// 				var callbackImpl = function(error, transactionHash){
-// 					devconsole.debug('***sendTransaction***transactionHash:',transactionHash);
-
-
-// 					var newTransactionPromise = salesforceEndpoint.insertSObject(
-// 							{orgId: orgId, userId: userId, environment: environment},
-// 							'dapps__Transactions__c', 
-// 							[
-// 								{name : 'Name', value : libraryName + '- Transaction'},
-// 								{name : 'dapps__Contract_Address_Hash__c', value : _address},
-// 								{name : 'dapps__TxHash__c', value : transactionHash}
-// 							]);
-
-// 					//insert token
-// 					if(token){
-
-// 						setTimeout(function(){
-// 								salesforce.insertSObject(
-// 									{orgId: orgId, userId: userId, environment: environment},
-// 									'dapps__Token_Transfers__c', 
-// 									[
-// 										{name : 'name', value : token.name},
-// 										{name : 'dapps__Contract_Address__c', value : _address},
-// 										{name : 'dapps__From_Address__c', value : token.from},
-// 										{name : 'dapps__To_Address__c', value : token.to},
-// 										{name : 'dapps__Value__c', value : token.tokenvalue},
-// 										{name : 'dapps__Transaction_Hash__c', value : transactionHash}
-// 									]);
-// 						},3000);
-// 						//var newTokenInsertPromise =
-// 					}
-
-// 					res.send(transactionHash);
-// 				}
-// 				web3Api.sendTransactionNew(inputParams,callbackImpl,function(error,transactionObj){
-
-// 					devconsole.debug('datajsonSend Transaction Completed with Block Number:',transactionObj.blockNumber);
-// 					devconsole.debug('***sendTransaction***transactionObj:',transactionObj);
-
-// 					//service.updateTransaction(transactionObj);
-// 					salesforceEndpoint.updateTransaction({orgId: orgId, userId: userId, environment: environment},transactionObj);
-
-// 			    	});
-
-// 				}catch(e){
-// 					devconsole.error('exception:',e);
-// 				}
-			
-// 		}
-// 	).error(function(error){
-// 		devconsole.debug('***error***',error);
-// 	});
-
-//     //var _data = req.body;
-
-
-
-// });
-
-
-
 //compile api
 //sample req parameter {type:"solidity", sourcecode:"solidity code"}
 router.post('/compile', function(req, res) {
@@ -1883,8 +1763,8 @@ route.post('/dispatchProtocolMessage', function(req, res) {
 		if (payload.root && payload.sibling_path) {
 			const verified = baselineApi.verify(this.contracts[sheild].address, payload.lead, payload.root, payload.sibling_path);
 			if (!verified) {
-				await baselineApi.sendProtocolMessage(sender, opcode, { err: 'verification failed' });
-				return Promist.reject('failed to verify')
+				baselineApi.sendProtocolMessage(sender, opcode, { err: 'verification failed' });
+				return Promise.reject('failed to verify')
 			}
 		}
 		this.workflowRecords[payload.doc.id] = payload.doc;
@@ -1892,15 +1772,15 @@ route.post('/dispatchProtocolMessage', function(req, res) {
 	  } else {
 		
 	// baseline this record
-	const proof = await baselineApi.generateProof(msg);
+	const proof = baselineApi.generateProof(msg);
 
-	const signerResp = (await keythereumApi.createEthereumAccount({
+	const signerResp = (keythereumApi.createEthereumAccount({
 		network_id: '3', // ropsten network api
 	}))
 
 	const resp = web3api.call({
 			method: 'verify',
-			params: [[proof], [this.baselineCircuitSetupArtifacts?.keypair.vk]],
+			params: [[proof], [this.baselineCircuitSetupArtifacts.keypair.vk]],
 			value: 0,
 			account_id: signerResp['id'],
 	});
@@ -1977,7 +1857,7 @@ router.post('/createWorkgroup', function(req, res) {
 
 // Create Workgroup 
 
-router.post('/deployWorkgroupContact', function(req, res) {
+router.post('/deployWorkgroupContract', function(req, res) {
 	
 	var _data = req.body;
 	var name = _data.name;
@@ -1989,8 +1869,59 @@ router.post('/deployWorkgroupContact', function(req, res) {
 		contractParams: contractParmas
 	  }).responseBody;
 
-});
+	  var initTransactionCallBack = function(error, transactionHash){
 
+		if(!transactionHash){
+			if(error == 'Error: insufficient funds for gas * price + value'){
+				res.json(prepareResponse('ERROR',{message : 'Ether wrong key or insufficient balance in provided account.'}));
+			}else{
+				res.json(prepareResponse('ERROR',{message : 'Something went wrong while creating smart contract'}));
+			}
+		}else{
+			var newContractPromise = salesforceEndpoint.insertSObject(oAuthToken,'dapps__Smart_Contract__c', [
+					{name:'Name', value : libraryName},
+					{name:'dapps__Library__c', value : libraryId}
+				]);
+
+			newContractPromise.then(function(referenceContract){
+				var referenceContractId = referenceContract.id;
+				console.log('referenceContractId:',referenceContractId);
+				var newTransactionPromise = salesforceEndpoint.insertSObject(oAuthToken,'dapps__Transactions__c', [
+						{name : 'Name', value : 'Workgroup Contract - Deployment'},
+						{name : 'dapps__Smart_Contract__c', value : referenceContractId},
+						{name : 'dapps__TxHash__c', value : transactionHash}
+
+					]);
+			});
+
+			newContractPromise.catch(function(newContractError){
+				if(newContractError && !newContractError.loggedIn){
+					res.json(prepareResponse('ERROR',{message : 'You are not verified with Dapps, verify and try again'}));
+				}
+				else{
+					res.json(prepareResponse('ERROR',{message : 'Something went wrong while storing data back to salesforce.'}));
+				}
+				
+			});
+
+			var newPrivateKeyPromise = utilService.getPrivateKey(params);
+            newPrivateKeyPromise.then(function(newPrivateKey){
+                devconsole.debug('####newPrivateKey', newPrivateKey);
+                if(!newPrivateKey){
+                    res.json(prepareResponse('ERROR',{message : 'Either eth password or private key is wrong.'}));
+                }
+                else{
+                    var contractDef = web3Api.loadContract(abi);
+                    web3Api.createContractNew(contractDef,
+                            {   data : byteData,
+                                from: fromAddress
+                            },newPrivateKey,
+                            initTransactionCallBack,
+							callBackWithInstanceImpl,_args);
+				}}
+			)};
+	  };
+});
 
 // Accept Workgroup Invite 
 
@@ -2021,7 +1952,7 @@ router.post('/inviteWorkgroupParticipant', function(req, res) {
 
 //deploy api
 
-router.post('/deployCircuit', function(req, res) {
+router.post('/deployBaselineCircuit', function(req, res) {
 	console.log("####### req", req.body);
     baselineApi.deployBaselineCircuit(req.body,
     		function(error,result){
@@ -2134,26 +2065,10 @@ router.get('/getLoginUri', function(req, res) {
 	console.log("#####req.query.state ", req.query.environment);
 	let environment = req.query.environment || "production";
 	res.send(salesforceEndpoint.getLoginUri(environment));
+
 });
 
 
-
-// var syncGethNode = function(){
-//     var options = {
-//       host: ethAccountSyncUrl,
-//       path: '/api/syncAccToGethNode'
-//     };
-
-//     var req = http.get(options, function(res) {
-//         console.log('res::',res.data);
-//     });
-//     console.log('@@req@@',req);
-// }
-
-
-
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
 app.use('/api', router);
 
 
@@ -2173,22 +2088,10 @@ app.get("/oauth/callback", function (req, res) {
 	//console.log("#########", req);	
     salesforceEndpoint.respondToSFDCCallback(req, res);
 }); 
-//----salesforce callback  end
 
-
-
-/*
-app.get('/compiler', function(req, res) {
-    res.sendFile(path.join(__dirname + '/testing/SolidityCompiler.html'));
 });
 
-app.get('/createcontract', function(req, res) {
-    res.sendFile(path.join(__dirname + '/testing/AbiToHTML.html'));
-});
-*/
-
-// START THE SERVER
-// =============================================================================
 app.listen(port);
 exports.app = app;
-console.log('Magic happens on port ' + port);
+
+console.log('Magic happens on port ' + port)
