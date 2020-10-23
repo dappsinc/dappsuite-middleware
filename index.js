@@ -11,6 +11,9 @@ var request = require('request');
 
 var web3ApiClass = require('./web3.api.js');
 var web3Api = new web3ApiClass();
+//var baselineApiClass = require('./baseline.api.js');
+//var baselineApi = new baselineApiClass();
+
 var salesforce = require('./salesforce');
 //var filter = require('./filter');
 var service = require('./service');
@@ -21,6 +24,7 @@ let daoServiceModule = require('./services/daoservice.js');
 let daoService = new daoServiceModule();
 let logger = require('./utils/utilsLogger.js');
 let keythereumApi = require('./keythereum/keythereum-api.js');
+let baselineApi = require('./baseline.api.js')
 let helmet = require('helmet');
 let http = require('http');
 
@@ -77,28 +81,6 @@ app.use(helmet.frameguard({ action: 'deny' }));//sameorigin
 app.use(helmet());
 app.disable('x-powered-by');
 
-//Intercepter
-// app.use(function(req, res, next) {
- 
-//   let devconsole = logger.getLogger('***Index.js***Intercepter***');
-//     devconsole.debug('Inside Intercepter');
-// 	let datajson = req.body;
-// 	devconsole.debug('***datajson***',datajson);
-// 	let reqStrEncrypted = datajson.reqStr;
-// 	const orgId = datajson.orgId;
-
-// 	var reqPromise = encryptService.parseServerRequest2(reqStrEncrypted,orgId);
-// 	reqPromise.then(
-// 		function(parsedRequest){
-// 			devconsole.debug('***parsedRequest***',parsedRequest);
-// 		}
-// 	).error(function(error){
-// 		devconsole.debug('***error***',error);
-// 	});
-
-//   next();
-// });
-
 
 var allowCrossDomain = function(req,res,next){
 	res.header('Access-Control-Allow-Origin','*');
@@ -112,7 +94,7 @@ app.use(allowCrossDomain);
 
 var port = process.env.PORT || 8080;        // set our port
 
-// ROUTES FOR OUR API
+// ROUTES FOR DAPPSUITE API
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
@@ -214,13 +196,16 @@ let prepareResponse = function(type,responseJson,params){
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/test', function(req, res) {
-    res.json({ message: 'Node Server is running normally, deployed on :(IST) 20/10/2017 22:48 PM --(GMT)'+deploymentTime});
+    res.json({ message: 'Dappsuite Node Server is running normally, deployed on: '+deploymentTime});
 });
 
+// Get Account [0]
 router.get('/testweb3', function(req, res) {
     res.json({ message:  'Account :' + web3Api.web3.eth.accounts[0]});
 });
 
+
+// Create Contract
 router.post('/createContract', function(req, res) {
 	//console.log('Log: In CreateContract method of server',res);
     var _data = req.body;
@@ -481,10 +466,6 @@ router.post('/createContractSign', function(req, res) {
 	}catch(e){
 		console.log('exception:',e);
 	}
-
-
-
-
 
 });
 
@@ -1049,126 +1030,6 @@ router.post('/sendTransactionSign2', function(req, res) {
 
 
 
-// router.post('/sendTransactionSign2', function(req, res) {
-
-// 	let devconsole = logger.getLogger('***Index.js***createAccountTest2***'); //Change1
-// 	var datajson = req.body;
-// 	var reqStrEncrypted = datajson.reqStr;
-// 	const orgId = datajson.orgId;
-
-// 	var reqPromise = encryptService.parseServerRequest2(reqStrEncrypted,orgId);
-// 	reqPromise.then(
-// 		function(_data,orgObj){
-// 			devconsole.debug('***_data***',_data);
-
-// 			    var abi  = _data.abi;
-// 			    var byteData = _data.byteData;
-// 			    var fromAddress = _data.from;
-// 			    var privateKey = _data.privateKey;
-// 			    var _address = _data.address;
-// 			    var constructorParam = _data.methodArgs;
-// 			    var _args = getArguments(constructorParam);
-// 			    var _methodName = _data.methodName;
-// 			    var libraryId = _data.libraryId;
-// 			    var libraryName = _data.libraryName;
-// 			    var ethereumPassword = _data.ethereumPassword;
-// 			    var trasactionPassword = _data.transactionPassword;
-// 			    var signUsingOption = _data.signUsingOption;
-
-// 			    //To Be Added in Salesforce Request
-// 			    var userId = _data.userId;
-
-// 			    var environment = orgObj.environment;
-
-// 			    var params = {
-// 			    	signUsingOption : signUsingOption,
-// 			    	isRegistered : true,
-// 			    	accountId :fromAddress,
-// 			    	ethereumPassword : ethereumPassword,
-// 			    	privateKey : privateKey
-// 			    };
-
-// 			    var newPrivateKey = utilService.getPrivateKey(params);
-// 			    devconsole.debug('***newPrivateKey***', newPrivateKey);
-
-// 			    //token details
-// 				var token;
-// 				if(_data.hasOwnProperty('token')){
-// 				    token =  _data.token;
-// 				    //console.log("######token", token);
-// 				}
-
-// 			    try{
-// 				var inputParams  = {
-// 					abi : abi,
-// 					args : _args,
-// 					from : fromAddress,
-// 					data:byteData,
-// 					address : _address,
-// 					methodName : _methodName,
-// 					privateKey : newPrivateKey
-// 				}
-// 				var callbackImpl = function(error, transactionHash){
-// 					devconsole.debug('***sendTransaction***transactionHash:',transactionHash);
-
-
-// 					var newTransactionPromise = salesforceEndpoint.insertSObject(
-// 							{orgId: orgId, userId: userId, environment: environment},
-// 							'dapps__Transactions__c', 
-// 							[
-// 								{name : 'Name', value : libraryName + '- Transaction'},
-// 								{name : 'dapps__Contract_Address_Hash__c', value : _address},
-// 								{name : 'dapps__TxHash__c', value : transactionHash}
-// 							]);
-
-// 					//insert token
-// 					if(token){
-
-// 						setTimeout(function(){
-// 								salesforce.insertSObject(
-// 									{orgId: orgId, userId: userId, environment: environment},
-// 									'dapps__Token_Transfers__c', 
-// 									[
-// 										{name : 'name', value : token.name},
-// 										{name : 'dapps__Contract_Address__c', value : _address},
-// 										{name : 'dapps__From_Address__c', value : token.from},
-// 										{name : 'dapps__To_Address__c', value : token.to},
-// 										{name : 'dapps__Value__c', value : token.tokenvalue},
-// 										{name : 'dapps__Transaction_Hash__c', value : transactionHash}
-// 									]);
-// 						},3000);
-// 						//var newTokenInsertPromise =
-// 					}
-
-// 					res.send(transactionHash);
-// 				}
-// 				web3Api.sendTransactionNew(inputParams,callbackImpl,function(error,transactionObj){
-
-// 					devconsole.debug('datajsonSend Transaction Completed with Block Number:',transactionObj.blockNumber);
-// 					devconsole.debug('***sendTransaction***transactionObj:',transactionObj);
-
-// 					//service.updateTransaction(transactionObj);
-// 					salesforceEndpoint.updateTransaction({orgId: orgId, userId: userId, environment: environment},transactionObj);
-
-// 			    	});
-
-// 				}catch(e){
-// 					devconsole.error('exception:',e);
-// 				}
-			
-// 		}
-// 	).error(function(error){
-// 		devconsole.debug('***error***',error);
-// 	});
-
-//     //var _data = req.body;
-
-
-
-// });
-
-
-
 //compile api
 //sample req parameter {type:"solidity", sourcecode:"solidity code"}
 router.post('/compile', function(req, res) {
@@ -1594,7 +1455,7 @@ router.post('/verifyOrganization', function(req, res) {
 	var reqStrEncrypted = datajson.reqStr;
 	const orgId = datajson.orgId;
 
-	const privateKey = 'dappsai8901234567890123456789012';
+	const privateKey = '';
 	let parsedRequest = encryptService.parseServerRequest(reqStrEncrypted,privateKey);
 	
 	devconsole.debug('***parsedRequest***',parsedRequest);
@@ -1627,7 +1488,7 @@ router.post('/verifyOrganization2', function(req, res) {
     devconsole.debug('***jsonBody***',jsonBody);
     let reqStrEncrypted = jsonBody.reqStr;
     let orgId = jsonBody.orgId;
-    const MASTER_KEY = 'dappsai8901234567890123456789012';
+    const MASTER_KEY = '';
     var reqPromise = encryptService.parseServerRequestWithMasterKey(reqStrEncrypted,orgId);
 	reqPromise.then(
 		function(parsedRequest){
@@ -1792,7 +1653,7 @@ let getBalanceCommon = function(accounts){
     return accountBalanceMap;
 }
 
-
+// Get Balance
 
 router.post('/getBalance', function(req, res) {
     let devconsole = logger.getLogger('***index.js***getBalance***');
@@ -1805,6 +1666,9 @@ router.post('/getBalance', function(req, res) {
     res.send(accountBalanceMap);
     
 });
+
+
+// Get Balance 
 
 router.post('/getBalance2', function(req, res) {
     let devconsole = logger.getLogger('***index.js***getBalance2***');
@@ -1831,9 +1695,354 @@ router.post('/getBalance2', function(req, res) {
     );
 });
 
+// Zokrates APIS
+
+
+router.post('/compile3', function(req, res) {
+
+	let devconsole = logger.getLogger('***index.js***compile3***');
+
+    var jsonBody = req.body;
+    devconsole.debug('***jsonBody***',jsonBody);
+    let reqStrEncrypted = jsonBody.reqStr;
+	let orgId = jsonBody.orgId;
+	
+    var reqPromise = encryptService.parseServerRequest2(reqStrEncrypted,orgId);
+	reqPromise.then(
+		function(parsedRequest){
+			devconsole.debug('***parsedRequest***',parsedRequest);
+			let dataStr = parsedRequest.dataStr;
+			let _data = JSON.parse(dataStr);
+			devconsole.debug('***_data***',_data);
+
+			let sourcecode = _data.sourcecode;
+			
+			zokratesProvider.compute(_data,
+					function(error,result){
+						//result will have zok object which can be used to compile
+
+						if(result){
+							res.send(result.compile(sourcecode));
+						}else if(error){
+							res.send(String(error));
+						}else{
+							res.send("Something went wrong, please refresh and try again!");
+						}
+					});
+			
+		}
+	).catch(function(error){
+		devconsole.debug('***error***',error);
+	});
+	
+});
+
+// Baseline Protocol APIS
+
+// Dispatch Protocol Message using NATS
+
+router.post('/dispatchProtocolMessage', function(req, res) {
+
+	var datajson = req.body;
+	var msg = datajson.msg;
+	var payload = msg.payload;
+	var opcode = msg.opcode;
+	var sender = msg.sender;
+	var recipient = msg.recipient;
+	const hash = sha256(payload.toString())
+	const sig = signMessage(vault[0].id, '', hash).signature
+
+	if (msg.opcode === Opcode.Baseline) {
+
+	baselineApi.sendProtocolMessage(msg.sender, Opcode.Baseline, {
+		doc: JSON.parse(msg.payload.toString()),
+		__hash: hash,
+		signature: sig,
+	  });
+	} else if (payload.doc && payload.__hash) {
+		if (payload.root && payload.sibling_path) {
+			const verified = baselineApi.verify(this.contracts[sheild].address, payload.lead, payload.root, payload.sibling_path);
+			if (!verified) {
+				baselineApi.sendProtocolMessage(sender, opcode, { err: 'verification failed' });
+				return Promise.reject('failed to verify')
+			}
+		}
+		this.workflowRecords[payload.doc.id] = payload.doc;
+		console.log('record is baselined...', payload.doc);
+	  } else {
+		
+	// baseline this record
+	const proof = baselineApi.generateProof(msg);
+
+	const signerResp = (keythereumApi.createEthereumAccount({
+		network_id: '3', // ropsten network api
+	}))
+
+	const resp = web3api.call({
+			method: 'verify',
+			params: [[proof], [this.baselineCircuitSetupArtifacts.keypair.vk]],
+			value: 0,
+			account_id: signerResp['id'],
+	});
+
+	console.log(resp);
+	if (!resp) {
+	  return Promise.reject(`failed to verify proof: ${proof}`);
+	}
+
+	const leaf = baselineApi.insertLeaf(sender, this.contracts['shield'].address, hash);
+	if (leaf) {
+		console.log(`inserted leaf... ${leaf}`);
+	} else {
+		return Promise.reject('failed to insert leaf');
+	}
+}
 
 
 
+
+//Get Shield Contract Merkle Leaf
+
+router.post('/getLeaf', function(req, res) {
+
+	var datajson = req.body;
+	var address = datajson.address;
+	var index = datajson.index;
+
+
+	baselineApi.getLeaf(address, index, function (merkleTreeObject) {
+	  // do stuff
+	});
+	
+	res.send();
+
+})
+
+
+// Insert Shield Contract Merkle Leaf
+
+router.post('/insertLeaf', function(req, res) {
+
+	var datajson = req.body;
+	var sender = datajson.sender;
+	var address = datajson.address;
+	var value = datajson.value;
+
+	baselineApi.insertLeaf(sender, address, value, function (merkleTreeObject) {
+	  // do stuff
+	});
+
+	res.send();
+})
+
+// Create Workgroup 
+
+router.post('/createWorkgroup', function(req, res) {
+	
+	var _data = req.body;
+	var name = _data.name;
+	const resp = baselineApi.createWorkgroup({
+		config: {
+		  baselined: true,
+		},
+		name: name,
+		network_id: '',
+	  }).responseBody;
+  
+	  this.workgroup = resp.application;
+	  this.workgroupToken = resp.token.token;
+
+});
+
+
+// Create Workgroup 
+
+router.post('/deployWorkgroupContract', function(req, res) {
+	
+	var _data = req.body;
+	var name = _data.name;
+	var type = _data.type;
+	var contractParams = _data.contractParams
+	const resp = baselineApi.createWorkgroup({
+		name: name,
+		type: type,
+		contractParams: contractParmas
+	  }).responseBody;
+
+	  var initTransactionCallBack = function(error, transactionHash){
+
+		if(!transactionHash){
+			if(error == 'Error: insufficient funds for gas * price + value'){
+				res.json(prepareResponse('ERROR',{message : 'Ether wrong key or insufficient balance in provided account.'}));
+			}else{
+				res.json(prepareResponse('ERROR',{message : 'Something went wrong while creating smart contract'}));
+			}
+		}else{
+			var newContractPromise = salesforceEndpoint.insertSObject(oAuthToken,'dapps__Smart_Contract__c', [
+					{name:'Name', value : libraryName},
+					{name:'dapps__Library__c', value : libraryId}
+				]);
+
+			newContractPromise.then(function(referenceContract){
+				var referenceContractId = referenceContract.id;
+				console.log('referenceContractId:',referenceContractId);
+				var newTransactionPromise = salesforceEndpoint.insertSObject(oAuthToken,'dapps__Transactions__c', [
+						{name : 'Name', value : 'Workgroup Contract - Deployment'},
+						{name : 'dapps__Smart_Contract__c', value : referenceContractId},
+						{name : 'dapps__TxHash__c', value : transactionHash}
+
+					]);
+			});
+
+			newContractPromise.catch(function(newContractError){
+				if(newContractError && !newContractError.loggedIn){
+					res.json(prepareResponse('ERROR',{message : 'You are not verified with Dapps, verify and try again'}));
+				}
+				else{
+					res.json(prepareResponse('ERROR',{message : 'Something went wrong while storing data back to salesforce.'}));
+				}
+				
+			});
+
+			var newPrivateKeyPromise = utilService.getPrivateKey(params);
+            newPrivateKeyPromise.then(function(newPrivateKey){
+                devconsole.debug('####newPrivateKey', newPrivateKey);
+                if(!newPrivateKey){
+                    res.json(prepareResponse('ERROR',{message : 'Either eth password or private key is wrong.'}));
+                }
+                else{
+                    var contractDef = web3Api.loadContract(abi);
+                    web3Api.createContractNew(contractDef,
+                            {   data : byteData,
+                                from: fromAddress
+                            },newPrivateKey,
+                            initTransactionCallBack,
+							callBackWithInstanceImpl,_args);
+				}}
+			)};
+	  };
+});
+
+// Accept Workgroup Invite 
+
+router.post('/acceptWorkgroupInvite', function(req, res) {
+	
+	var _data = req.body;
+	var inviteToken = _data.inviteToken;
+	var contracts = _data.contracts;
+	const resp = baselineApi.acceptWorkgroupInvite({
+		inviteToken: inviteToken,
+		contracts: contracts
+	  }).responseBody;
+
+});
+
+
+// Invite Workgroup Participant
+
+router.post('/inviteWorkgroupParticipant', function(req, res) {
+	
+	var _data = req.body;
+	var email = _data.email;
+	const resp = baselineApi.inviteWorkgroupParticipant({
+		email: email
+	  }).responseBody;
+
+});
+
+//deploy api
+
+router.post('/deployBaselineCircuit', function(req, res) {
+	console.log("####### req", req.body);
+    baselineApi.deployBaselineCircuit(req.body,
+    		function(error,result){
+
+		    	if(result){
+		    		res.send(result.setupArtifacts(req.body.sourcecode));
+		    	}else if(error){
+		    		res.send(String(error));
+		    	}else{
+		    		res.send("Something went wrong, please refresh and try again!");
+		    	}
+		     });
+});
+
+
+//Compile Baseline Circuit API
+
+router.post('/compileBaselineCircuit', function(req, res) {
+	console.log("####### req", req.body);
+    baselineApi.compileBaselineCircuit(req.body,
+    		function(error,result){
+    			//result will have solc object which can be used to compile
+
+		    	if(result){
+		    		res.send(result.compile(req.body.sourcecode));
+		    	}else if(error){
+		    		res.send(String(error));
+		    	}else{
+		    		res.send("Something went worng, please refresh and try again!");
+		    	}
+		     });
+});
+
+
+//Sends Nats Message
+
+router.post('/sendProtocolMessage', function(req, res) {
+	console.log("####### req", req.body);
+    baselineApi.sendProtocolMessage(req.body,
+    		function(error,result){
+		    	if(result){
+		    		res.send(result);
+		    	}else if(error){
+		    		res.send(String(error));
+		    	}else{
+		    		res.send("Something went wrong. The NATS message didn't go through.");
+		    	}
+		     });
+});
+
+
+// Generate Proof
+
+router.post('/generateProof', function(req, res) {
+	
+	var _data = req.body;
+	var _msg = _data.msg;
+    try{
+	baselineApi.generateProof({
+		msg: _msg,
+		callbackFn : function(error,result){
+			console.log(error,result);
+			if(result)
+				res.send(result);
+		}
+	});
+
+	}catch(e){
+		console.log('exception:',e);
+	}
+});
+
+
+// Register Organization
+
+router.post('/registerOrganization', function(req, res) {
+
+	var _data = req.body;
+	var name = _data.name;
+	var messagingEndpoint = _data.messagingEndpoint;
+
+    var org = baselineApi.createOrganization({
+      name: name,
+      metadata: {
+        messaging_endpoint: messagingEndpoint,
+      },
+	}).responseBody;
+	
+    res.data(org);
+  })
 
 
 router.post('/postTest', function(req, res) {
@@ -1856,26 +2065,10 @@ router.get('/getLoginUri', function(req, res) {
 	console.log("#####req.query.state ", req.query.environment);
 	let environment = req.query.environment || "production";
 	res.send(salesforceEndpoint.getLoginUri(environment));
+
 });
 
 
-
-// var syncGethNode = function(){
-//     var options = {
-//       host: ethAccountSyncUrl,
-//       path: '/api/syncAccToGethNode'
-//     };
-
-//     var req = http.get(options, function(res) {
-//         console.log('res::',res.data);
-//     });
-//     console.log('@@req@@',req);
-// }
-
-
-
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
 app.use('/api', router);
 
 
@@ -1895,22 +2088,10 @@ app.get("/oauth/callback", function (req, res) {
 	//console.log("#########", req);	
     salesforceEndpoint.respondToSFDCCallback(req, res);
 }); 
-//----salesforce callback  end
 
-
-
-/*
-app.get('/compiler', function(req, res) {
-    res.sendFile(path.join(__dirname + '/testing/SolidityCompiler.html'));
 });
 
-app.get('/createcontract', function(req, res) {
-    res.sendFile(path.join(__dirname + '/testing/AbiToHTML.html'));
-});
-*/
-
-// START THE SERVER
-// =============================================================================
 app.listen(port);
 exports.app = app;
-console.log('Magic happens on port ' + port);
+
+console.log('Magic happens on port ' + port)

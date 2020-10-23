@@ -62,6 +62,19 @@ self.getBalanceSync = function(address,unit){
 //console.log(web3.eth.getBalance("0x2dccf5d9c5cc6ea6a50034529e3d0b613fedd3ab"));
 
 /*
+To get and resolve an ENS address
+{address} - address
+i.e. setDefaultAccount(accounts[0]);
+*/
+
+self.getAddress = function(address){
+    eth.ens.getAddress(ENSName).then(function (address) {
+        
+    })
+    return address;
+}
+
+/*
 To set default account
 {account} - account address
 i.e. setDefaultAccount(accounts[0]);

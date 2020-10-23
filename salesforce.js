@@ -1,11 +1,11 @@
 var nforce 			= require('nforce');
 var http			= require('http');
 
-var SF_UNAME 		= process.env.SF_UNAME; // set salesforce username
-var SF_PWD 			= process.env.SF_PWD; // set salesforce password
-var CLIENT_ID 		= process.env.CLIENT_ID; 
-var CLIENT_SECRET 	= process.env.CLIENT_SECRET; // set connected app secret
-var CALLBACK_URI	= process.env.CALLBACK_URI;
+var SF_UNAME 		= process.env.SF_UNAME; // set salesforce username in env vars
+var SF_PWD 			= process.env.SF_PWD; // set salesforce password in env vars
+var CLIENT_ID 		= process.env.CLIENT_ID;  // set connected app client in env vars
+var CLIENT_SECRET 	= process.env.CLIENT_SECRET; // set connected app secret in env vars
+var CALLBACK_URI	= process.env.CALLBACK_URI; // set callback uri in env vars
 
 var oauth;
 var oauthJSONString='';
@@ -162,44 +162,6 @@ function updateSObject(query) {
 
 
 
-//Function to query the ABI of a contract that already exist the library in SFDC
-//Store ABI in var that can then be used to dynamically populate the html page
-
-//function queryContractABI(contractName) {
-
-//        let q = "SELECT Id, Name, ABI__c FROM Library__c WHERE Name LIKE '%" + contractName + "%' LIMIT 5";
- //       org.query({query: q}, (err, resp) => {
- //           if (err) {
- //               reject("An error as occurred");
- //           } else {
-  //              resolve(resp.records);
-  //          }
- //    	};
- //    });
-
-//}
-
-
-
-//Function to query the private key from the User Record;
-//Store pKey in var that can then be used to dynamically sign messages based on the user
-
-
-////function queryUserKey(name) {
-
-//        let q = "SELECT Id, Name, pKey__c FROM User WHERE Name LIKE '%" + name + "%' LIMIT 1";
- //       org.query({query: q}, (err, resp) => {
- //           if (err) {
- //               reject("An error as occurred");
- //           } else {
-  //              resolve(resp.records);
-  //          }
- //    	};
- //    });
-
-//}
-
-
 //pass on the contractObj with address returned along with id
 
 function updateContract(contractObj,result,callback) {
@@ -297,7 +259,7 @@ function savecontracttolibrary(libObj,callback) {
 
 }
 
-
+// Create Address
 
 function createAddress(addressObj,callback) {
 	console.log("in sf set address", addressObj);
@@ -320,6 +282,8 @@ function createAddress(addressObj,callback) {
 	}
 }
 
+
+// Create Token
 
 function createToken(data) {
 	console.log("in sf set token", data);
@@ -345,6 +309,8 @@ function createToken(data) {
 	}
 }
 
+// Create Contract Record
+
 function createContractRecord(contractObj,callback) {
 	console.log("in sf create contract", contractObj);
 	var contract = nforce.createSObject('dapps__Smart_Contract__c');
@@ -367,7 +333,7 @@ function createContractRecord(contractObj,callback) {
 
 }
 
-
+// Create Standard Contract Record 
 
 function createStandardContract(standardContract,callback) {
 	console.log("create standard contract object", standardContract);
@@ -389,12 +355,54 @@ function createStandardContract(standardContract,callback) {
 
 }
 
+// Baseline Salesforce Record for RFQ Use Case from Radish-34
+// GetReferencedBaselineId
+
+function updateBaselinedContractRecord(baselinedRecord, result, callback) {
+
+	console.log("create baselined contract object", baselinedRecord);
+	var q = `SELECT rfqCaseId from Contract WHERE rfqCaseId = ${baselinedRecord.rfqCaseId} LIMIT 1`;
+	
+	org.query({ query: q }, function(err, resp){
+	if(err) return console.error(err);
+
+	if(!err && resp.records) {
+	   
+	var contract = resp.records[0];
+	contract.rfqCaseId = baselineRecord.rfqCaseId;
+	contract.purchQty = baselinedRecord.purchQty;
+	contract.purchUnit = baselinedRecord.purchUnit;
+	contract.purchPrice = baselineRecord.purchPrice;
+	contract.lineNum = baselineReocrd.lineNum;
+	
+    org.update({ sobject: contract, oauth: oauth }, function(err, resp){
+		if(!err) console.log('Baselined record updated in Salesforce!');
+			});
+		}
+	});
+}
 
 
+function createBaselinedContractRecord(baselinedRecord, callback) {
+
+	console.log("Create a new Baselined record in Salesforce!")
+	var baselinedRecord = nforce.createSObject('Contract')
+	baselinedRecord.set('rfqCaseId', baselineRecord.rfqCaseId);
+	baselinedRecord.set('purchQty', baselinedRecord.purchQty);
+	baselinedRecord.set('purchUnit', baselinedRecord.purchUnit);
+	baselinedRecord.set('purchPrice', baselineRecord.purchPrice);
+	baselinedRecord.set('lineNum', baselineRecord.lineNum);
+
+	org.insert({ sobject: baselineRecord, oauth: oauth }, function(err, resp){
+		if(!err) console.log('Baselined Contract Object Created');
+	});
+};
 
 
 //export the functions here
 exports.login = login;
+exports.createBaselinedContractRecord = createBaselinedContractRecord;
+exports.updateBaselinedContractRecord = updateBaselinedContractRecord;
 exports.createContractRecord = createContractRecord;
 exports.createStandardContract = createStandardContract;
 exports.updateContract = updateContract;
@@ -402,7 +410,6 @@ exports.setTransaction = setTransaction;
 exports.getRecordsByQuery = getRecordsByQuery;
 exports.createAddress = createAddress;
 exports.createToken = createToken;
-
 exports.insertSObject = insertSObject;
 exports.updateWithReference = updateWithReference;
 exports.updateWithId = updateWithId;
