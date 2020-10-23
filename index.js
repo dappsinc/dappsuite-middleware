@@ -1741,7 +1741,7 @@ router.post('/compile3', function(req, res) {
 
 // Dispatch Protocol Message using NATS
 
-route.post('/dispatchProtocolMessage', function(req, res) {
+router.post('/dispatchProtocolMessage', function(req, res) {
 
 	var datajson = req.body;
 	var msg = datajson.msg;

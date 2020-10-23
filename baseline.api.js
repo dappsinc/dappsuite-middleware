@@ -1,21 +1,19 @@
 var baselineApiModule = function(){
-    var self = this;
+var self = this;
 
 var PROVIDER_URL = ''; // Set Provider URL
 
 var ETH_TX_PATH = './node_modules/ethereumjs-tx/index.js';
 
   
-import { IBaselineRPC, IBlockchainService, IRegistry, IVault, baselineServiceFactory, baselineProviderProvide } from '@baseline-protocol/api';
-import { IMessagingService, messagingProviderNats, messagingServiceFactory } from '@baseline-protocol/messaging';
-import { IZKSnarkCircuitProvider, IZKSnarkCompilationArtifacts, IZKSnarkTrustedSetupArtifacts, zkSnarkCircuitProviderServiceFactory, zkSnarkCircuitProviderServiceZokrates } from '@baseline-protocol/privacy';
-import { messageReservedBitsLength, Message as ProtocolMessage, Opcode, PayloadType } from '@baseline-protocol/types';
-import { Application as Workgroup, Invite, Vault as ProvideVault, Organization, Token, Key as VaultKey } from '@provide/types';
-import { Capabilities, Ident, NChain, Vault, capabilitiesFactory, nchainClientFactory } from 'provide-js';
-import { readFileSync } from 'fs';
-import { compile as solidityCompile } from 'solc';
-import * as jwt from 'jsonwebtoken';
-import { keccak256 } from 'js-sha3';
+var IBaselineRPC = require('@baseline-protocol/api');
+var baselineServiceFactory = require('@baseline-protocol/api');
+var baselineProviderProvide = require('@baseline-protocol/api');
+var messagingProviderNats = require('@baseline-protocol/messaging');
+var messagingServiceFactory = require('@baseline-protocol/messaging');
+var zkSnarkCircuitProviderServiceFactory = require('@baseline-protocol/privacy');
+var zkSnarkCircuitProviderServiceZokrates = require('@baseline-protocol/privacy');
+var Vault = require('provide-js');
 var Web3 = require('web3');
 var solc = require('solc');
 var Transaction = require(ETH_TX_PATH);
@@ -157,7 +155,7 @@ self.compile = function(req,callbackFn){
 
 self.signMessage = async function(vaultId, keyId, message) {
     const orgToken = (await this.createOrgToken()).token;
-    const vault = Vault.clientFactory(orgToken, this.baselineConfig?.vaultApiScheme, this.baselineConfig?.vaultApiHost);
+    const vault = Vault.clientFactory(orgToken, this.baselineConfig.vaultApiScheme, this.baselineConfig.vaultApiHost);
     return (await vault.signMessage(vaultId, keyId, message));
   }
 
@@ -165,14 +163,14 @@ self.signMessage = async function(vaultId, keyId, message) {
 
  self.fetchKeys = async function() {
     const orgToken = (await this.createOrgToken()).token;
-    const vault = Vault.clientFactory(orgToken, this.baselineConfig?.vaultApiScheme, this.baselineConfig?.vaultApiHost);
+    const vault = Vault.clientFactory(orgToken, this.baselineConfig.vaultApiScheme, this.baselineConfig.vaultApiHost);
     const vaults = (await vault.fetchVaults({}));
     return (await vault.fetchVaultKeys(vaults[0].id, {}));
   }
 
 // Compile Baseline Circuit
 
-self.compileBaselineCircuit = function(){
+self.compileBaselineCircuit = async function(){
     const path = readFileSync(baselineDocumentCircuitPath).toString();
     this.baselineCircuitArtifacts = await zk.compile(path, 'main')
     return baselineCircuitArtifacts;
@@ -181,7 +179,7 @@ self.compileBaselineCircuit = function(){
 
 // Deploy Baseline Circuit
 
-self.deployBaselineCircuit = function(){
+self.deployBaselineCircuit = async function(){
 
     await this.compileBaselineCircuit();
 
@@ -192,6 +190,7 @@ self.deployBaselineCircuit = function(){
 
     const shieldAddress = await  this.deployWorkgroupShieldContract();
     const trackedShield = await baseline.track(shieldAddress);
+
     if (trackedShield) {
         this.contracts['shield'] = {
             address: shieldAddress,
@@ -201,11 +200,10 @@ self.deployBaselineCircuit = function(){
     }
 
     baselineCircuitSetupArtifacts = setupArtifacts;
-    workflowIdentifier = baselineCircuitSetupArtifacts?.identifier;
+    workflowIdentifier = baselineCircuitSetupArtifacts.identifier;
 
     return setupArtifacts;
 
-    }
 }
 
 // Accept Workgroup Invite
@@ -265,7 +263,7 @@ self.setWorkgroup = function(workgroup, workgroupToken) {
 
 // Invite Workgroup Participant
 
-self.inviteWorkgroupParticipant = function(email){
+self.inviteWorkgroupParticipant = async function(email){
  
         createInvitation({
             application_id: this.workgroup.id,
@@ -285,7 +283,7 @@ self.inviteWorkgroupParticipant = function(email){
 
 // Deploy Workgroup Contract
 
-self.deployWorkgroupSheildContract = function() {
+self.deployWorkgroupSheildContract = async function() {
 
     const txHash = await baseline.rpcExec;
 
@@ -332,7 +330,7 @@ self.generateProof = function(msg) {
 
 // Send Nats Message
 
-self.sendProtocolMessage = function(recipient, opcode, msg) {
+self.sendProtocolMessage = async function(recipient, opcode, msg) {
 
     const messagingEndpoint = await this.resolveMessagingEndpoint(recipient);
     
@@ -371,7 +369,7 @@ self.sendProtocolMessage = function(recipient, opcode, msg) {
 
 // Resolve Messaging Endpoint
 
-self.resolveMessagingEndpoint = function(addr) {
+self.resolveMessagingEndpoint = async function(addr) {
     const org = await this.fetchOrganization(addr);
     if (!org) {
       return Promise.reject(`organization not resolved: ${addr}`);
@@ -387,7 +385,7 @@ self.resolveMessagingEndpoint = function(addr) {
 
 // Resolve NATS Bearer Token
 
-self.resolveNatsBearerToken = function(addr) {
+self.resolveNatsBearerToken = async function(addr) {
     const endpoint = await this.resolveMessagingEndpoint(addr);
     if (!endpoint) {
       return Promise.reject(`failed to resolve messaging endpoint for participant: ${addr}`);
@@ -399,13 +397,12 @@ self.resolveNatsBearerToken = function(addr) {
 
 // Start Protocol Subscriptions
 
-self.startProtocolSubscriptions = function() {
-    if (!this.nats?.isConnected()) {
-        await this.nats?.connect();
+self.startProtocolSubscriptions = async function() {
+    if (!this.nats.isConnected()) {
+        await this.nats.connect();
       }
-}
 
-const subscription = await this.nats?.subscribe(baselineProtocolMessageSubject, (msg, err) => {
+const subscription = await this.nats.subscribe(baselineProtocolMessageSubject, (msg, err) => {
     console.log(`received ${msg.length}-byte protocol message: \n\t${msg}`);
     this.protocolMessagesRx++;
     this.ingestProtocolMessage(msg);
@@ -432,8 +429,9 @@ async function protocolMessageFactory(
       signature: signature,
       type: PayloadType.Text,
       payload: payload,
+            }
+        }
     };
-  }
 
     const reservedBits = Buffer.alloc(messageReservedBitsLength / 8);
     const buffer = Buffer.alloc(5 + 42 + 42 + 36 + 64 + 1 + reservedBits.length + msg.payload.length);
@@ -450,8 +448,7 @@ async function protocolMessageFactory(
     buffer.write(msg.payload.toString(encoding), 5 + 42 + 42 + 36 + reservedBits.length + 64 + 1);
 
     return buffer;
-
-
+}
 
 if(module!=undefined && module.exports!=undefined){
     module.exports = baselineApiModule;
@@ -459,4 +456,3 @@ if(module!=undefined && module.exports!=undefined){
 else{
     window.baselineApiModule = baselineApiModule;   
 }
-  
