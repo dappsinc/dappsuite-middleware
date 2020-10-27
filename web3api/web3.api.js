@@ -3,7 +3,7 @@ var self = this;
 /*
 String constants 
 */
-var PROVIDER_URL = '';
+var PROVIDER_URL = 'https://ropsten.infura.io/v3/3a1d742cd66d43e1ab09e3af56012769';
 var ETH_TX_PATH = '../node_modules/ethereumjs-tx/index.js';
 
 var Web3 = require('web3');

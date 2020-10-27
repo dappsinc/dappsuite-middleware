@@ -151,13 +151,13 @@ var getDefault = function(param){
 	//
 }
 
-var syncGethNode = function(){
-    request(ethAccountSyncUrl+"/api/syncAccToGethNode", function (error, response, body) {
-		console.log('error:', error); // Print the error if one occurred
-		console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-		console.log('body:', body); // Print the HTML for the Google homepage.
-	});
-}
+//var  = function(){
+//    request(ethAccountSyncUrl+"/api/syncAccToGethNode", function (error, response, body) {
+//		console.log('error:', error); // Print the error if one occurred
+//		console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+//		console.log('body:', body); // Print the HTML for the Google homepage.
+//	});
+// }
 
 let prepareResponse = function(type,responseJson,params){
     if(!responseJson){
@@ -1335,6 +1335,8 @@ router.post('/publicEncrypt', function(req, res) {
 	console.log('***publicEncrypt - encryptedData : ***',encryptedData);
 	res.json(encryptedData);
 });
+
+
 router.post('/publicDecrypt', function(req, res) {
 	var datajson = req.body;
 	var encryptedText = datajson.encryptedText;
@@ -1380,7 +1382,7 @@ router.post('/createAccount', function(req, res) {
 	
 });
 
-syncGethNode();
+// syncGethNode();
 
 let createAccountCommon = function(orgId,parsedRequest){
     let devconsole = logger.getLogger('***index.js***createAccountCommon***');
@@ -1411,7 +1413,7 @@ let createAccountCommon = function(orgId,parsedRequest){
       console.log('callbackImpl in createAccountCommon : result:',result);
     }
 
-    syncGethNode();
+    // syncGethNode();
 
     setTimeout(function(){
         web3Api.transfer(inputParams,callbackImpl,function(error,transactionObj){
@@ -1738,6 +1740,20 @@ router.post('/compile3', function(req, res) {
 });
 
 // Baseline Protocol APIS
+
+
+// Provide APIs
+
+router.post('/createOrgToken', function(req, res) {
+
+	var datajson = req.body;
+	var msg = datajson.msg;
+	var token = msg.token;
+
+	baselineApi.createOrgToken(token, function(result){
+    	res.send(result);
+    });
+});
 
 // Dispatch Protocol Message using NATS
 
@@ -2085,7 +2101,6 @@ app.get('/', function(req, res) {
 
 //----salesforce callback 
 app.get("/oauth/callback", function (req, res) {                
-	//console.log("#########", req);	
     salesforceEndpoint.respondToSFDCCallback(req, res);
 }); 
 
