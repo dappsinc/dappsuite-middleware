@@ -2061,6 +2061,91 @@ router.post('/registerOrganization', function(req, res) {
   })
 
 
+// AAVE APIS
+
+var lendingPool; // requires ethers
+
+// Deposits the underlying asset into the reserve. A corresponding amount of the overlying asset (aTokens) is minted.
+
+router.post('/deposit', function(req, res) {
+
+	var datajson = req.body;
+	var msg = datajson.msg;
+	var user = msg.address;
+	var reserve = msg.reserve;
+	var amount = msg.amount;
+
+	var deposit = lendingPool.deposit({
+		user,
+		reserve,
+		amount    
+	});
+
+	res.data(desposit);	
+});
+
+// Borrow an amount of reserve asset.
+
+router.post('/borrow', function(req, res) {
+
+	var datajson = req.body;
+	var msg = datajson.msg;
+	var user = msg.address;
+	var reserve = msg.reserve;
+	var amount = msg.amount;
+	
+	var borrow = lendingPool.borrow({
+		user,
+		reserve,
+		amount,
+		stable
+	});
+
+	res.data(borrow);	
+});
+
+// Repays a borrow on the specific reserve
+
+router.post('/repay', function(req, res) {
+
+	var datajson = req.body;
+	var msg = datajson.msg;
+	var user = msg.address;
+	var reserve = msg.reserve;
+	var amount = msg.amount;
+	
+	var repay = lendingPool.repay({
+		user,
+		reserve,
+		amount,
+		stable
+	});
+
+	res.data(repay);	
+});
+
+// Withdraws the underlying asset of an aToken asset.
+
+router.post('/withdraw', function(req, res) {
+
+	var datajson = req.body;
+	var msg = datajson.msg;
+	var user = msg.address;
+	var reserve = msg.reserve;
+	var amount = msg.amount;
+	var aTokenAddress = msg.aTokenAddress;
+	
+	var withdraw = lendingPool.withdraw({
+		user,
+		reserve,
+		amount,
+		aTokenAddress
+	});
+
+	res.data(withdraw);	
+});
+
+
 router.post('/postTest', function(req, res) {
 	console.log('***inside : postTest ***');
 	var datajson = req.body;
@@ -2083,6 +2168,12 @@ router.get('/getLoginUri', function(req, res) {
 	res.send(salesforceEndpoint.getLoginUri(environment));
 
 });
+
+
+
+
+
+
 
 
 app.use('/api', router);
